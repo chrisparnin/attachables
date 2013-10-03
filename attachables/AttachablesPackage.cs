@@ -37,15 +37,10 @@ namespace ninlabs.attachables
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string)]
 
-    public sealed class AttachablesPackage : Package
+    public sealed class AttachablesPackage : Package, IVsSolutionEvents
     {
-        /// <summary>
-        /// Default constructor of the package.
-        /// Inside this method you can place any initialization code that does not require 
-        /// any Visual Studio service because at this point the package object is created but 
-        /// not sited yet inside Visual Studio environment. The place to do all the other 
-        /// initialization is the Initialize method.
-        /// </summary>
+        private uint m_solutionCookie = 0;
+
         public AttachablesPackage()
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
@@ -90,10 +85,6 @@ namespace ninlabs.attachables
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
-            // TODO set to APPLocal
-            RemindersContext.ConfigureDatabase("");
-            Manager = new ReminderManager();
-
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if ( null != mcs )
@@ -107,8 +98,29 @@ namespace ninlabs.attachables
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
             }
+
+            IVsSolution solution = (IVsSolution)GetService(typeof(SVsSolution));
+            ErrorHandler.ThrowOnFailure(solution.AdviseSolutionEvents(this, out m_solutionCookie));
         }
         #endregion
+
+        private void InitializeWithSolutionAndDTEReady()
+        {
+            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+
+            var dte = (EnvDTE.DTE)this.GetService(typeof(EnvDTE.DTE));
+            if (dte != null && dte.Solution != null)
+            {
+                path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
+                path = System.IO.Path.Combine(path, "attachables", System.IO.Path.GetFileNameWithoutExtension(dte.Solution.FullName));
+            }
+            if (!System.IO.Directory.Exists(path))
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            RemindersContext.ConfigureDatabase(path);
+            Manager = new ReminderManager();
+        }
 
         /// <summary>
         /// This function is the callback used to execute a command when the a menu item is clicked.
@@ -135,5 +147,56 @@ namespace ninlabs.attachables
                        out result));
         }
 
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            InitializeWithSolutionAndDTEReady();
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
     }
 }
