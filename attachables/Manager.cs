@@ -7,72 +7,98 @@ using System.Threading.Tasks;
 using ninlabs.attachables.Models;
 using ninlabs.attachables.Models.Conditions;
 using ninlabs.attachables.Storage;
+using ninlabs.attachables.Util;
 
 namespace ninlabs.attachables
 {
+    public delegate void RemindersUpdateEvent(object sender, EventArgs args);
+
     public class ReminderManager
     {
+        public event RemindersUpdateEvent RemindersUpdated;
+
         public List<Reminder> GetReminders()
         {
-            //using (var db = new RemindersContext())
-            //{
-            //    var list = db.Reminders.ToList();
-            //    return list.Select(r => new Reminder()
-            //    {
-            //        Id = r.Id,
-            //        NotificationType = (NotificationType)Enum.ToObject(typeof(NotificationType), (ulong)r.NotificationType),
-            //        ReminderMessage = r.Message,
-            //        Condition = r.Condition.Deserialize<AbstractCondition>(),
-            //        IsCompleted = r.IsCompleted,
-            //        CreatedOn = r.CreatedOn
-            //    }).OrderBy(r => r.IsCompleted).ToList();
-            //}
-            return new Reminder[] 
-            { 
-                new Reminder()
+            using (var db = new RemindersContext())
+            {
+                if (db.Reminders == null || db.Reminders.Count() == 0)
+                    return new List<Reminder>();
+
+                var list = db.Reminders.ToList();
+                return list.Select(r => new Reminder()
                 {
-                    Condition = new Proximity()
-                    {
-                        Path = "",
-                    },
-                    NotificationType = NotificationType.Viewport,
-                    ReminderMessage = "Always something to remind me"
-                }
-            }.ToList();
+                    Id = r.Id,
+                    NotificationType = r.NotificationType,
+                    ReminderMessage = r.ReminderMessage,
+                    Condition = r.ConditionAsString.Deserialize<AbstractCondition>(),
+                    IsCompleted = r.IsCompleted,
+                    CreatedOn = r.CreatedOn
+                }).OrderBy(r => r.IsCompleted).ToList();
+            }
+        }
+
+        public void AttachReminder(string message, string path)
+        {
+            SaveReminder(new Reminder()
+            {
+                 Condition = new Proximity()
+                 {
+                     Path = path
+                 },
+                 CreatedOn = DateTime.Now,
+                 NotificationType = NotificationType.Viewport,
+                 ReminderMessage = message
+            });
+        }
+
+        public void WhenDateShowReminder(string message, DateTime triggerBy)
+        {
+            SaveReminder(new Reminder()
+            {
+                Condition = new Time()
+                {
+                    TriggerBy = triggerBy
+                },
+                CreatedOn = DateTime.Now,
+                NotificationType = NotificationType.Viewport,
+                ReminderMessage = message
+            });
         }
 
         public void SaveReminder(Reminder reminder)
         {
-            //using (var db = new RemindersContext())
-            //{
-            //    var dbReminder = db.Reminders.Where(r => r.Id == reminder.Id).SingleOrDefault();
-            //    if (dbReminder == null)
-            //    {
-            //        dbReminder = new SmartReminderEntity()
-            //        {
-            //            Condition = reminder.Condition.Serialize(),
-            //            CreatedOn = reminder.CreatedOn,
-            //            ExpireBy = reminder.CreatedOn.AddDays(90),
-            //            TriggerBy = null,
-            //            NotificationType = (int)reminder.NotificationType,
-            //            Message = reminder.ReminderMessage,
-            //            IsCompleted = reminder.IsCompleted,
-            //        };
-            //        var updated = db.Reminders.Add(dbReminder);
-            //        db.SaveChanges();
-            //        reminder.Id = updated.Id;
-            //    }
-            //    else
-            //    {
-            //        dbReminder.Condition = reminder.Condition.Serialize();
-            //        dbReminder.ExpireBy = DateTime.Now.AddDays(90);
-            //        dbReminder.NotificationType = (int)reminder.NotificationType;
-            //        dbReminder.Message = reminder.ReminderMessage;
-            //        dbReminder.IsCompleted = reminder.IsCompleted;
+            using (var db = new RemindersContext())
+            {
+                var dbReminder = db.Reminders.Where(r => r.Id == reminder.Id).SingleOrDefault();
+                if (dbReminder == null)
+                {
+                    dbReminder = new ReminderContract()
+                    {
+                        ConditionAsString = reminder.Condition.Serialize(),
+                        CreatedOn = reminder.CreatedOn,
+                        NotificationType = reminder.NotificationType,
+                        ReminderMessage = reminder.ReminderMessage,
+                        IsCompleted = reminder.IsCompleted,
+                    };
+                    var updated = db.Reminders.Add(dbReminder);
+                    db.SaveChanges();
+                    reminder.Id = updated.Id;
+                }
+                else
+                {
+                    dbReminder.ConditionAsString = reminder.Condition.Serialize();
+                    dbReminder.NotificationType = reminder.NotificationType;
+                    dbReminder.ReminderMessage = reminder.ReminderMessage;
+                    dbReminder.IsCompleted = reminder.IsCompleted;
 
-            //        db.SaveChanges();
-            //    }
-            //}
+                    db.SaveChanges();
+                }
+
+                if (RemindersUpdated != null)
+                {
+                    RemindersUpdated(this, EventArgs.Empty);
+                }
+            }
         }
 
         public void ExportReminders(string exportToPath)
@@ -81,7 +107,7 @@ namespace ninlabs.attachables
             var package = new ReminderExportPackage()
             {
                 Reminders = reminders,
-                Version = "V4/24/2012-A"
+                Version = "V5/3/2013"
             };
 
             File.WriteAllText(exportToPath, Util.SerializationExtensions.Serialize(package));

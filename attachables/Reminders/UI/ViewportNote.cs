@@ -34,7 +34,14 @@ namespace ninlabs.attachables.UI
 
             _view.ViewportHeightChanged += delegate { this.onSizeChange(); };
             _view.ViewportWidthChanged += delegate { this.onSizeChange(); };
-            //_view.GotAggregateFocus += delegate { this.onSizeChange(); };
+            _view.GotAggregateFocus += delegate { this.onSizeChange(); };
+            
+            AttachablesPackage.Manager.RemindersUpdated += Manager_RemindersUpdated;
+        }
+
+        private void Manager_RemindersUpdated(object sender, EventArgs args)
+        {
+            onSizeChange();
         }
 
         public void onSizeChange()
@@ -69,7 +76,7 @@ namespace ninlabs.attachables.UI
                 Canvas.SetLeft(note, left);
                 Canvas.SetTop(note, top);
 
-                top += note.Height + 15;
+                top += note.Height + 3;
 
                 //add the image to the adornment layer and make it relative to the viewport
                 _adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, note, null);

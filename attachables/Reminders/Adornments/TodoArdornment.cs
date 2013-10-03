@@ -20,9 +20,6 @@ namespace TodoArdornment
         Pen _pen;
         ITagAggregator<TodoGlyphTag> _createTagAggregator;
 
-
-        Regex todoLineRegex = new Regex(@"\/\/\s*TODO\b");
-        //Regex todoLineRegex = new Regex(@"\bTODO\b");
         public TodoArdornment(IWpfTextView view, ITagAggregator<TodoGlyphTag> aggregrator)
         {
             _view = view;
@@ -65,78 +62,13 @@ namespace TodoArdornment
             int start = line.Start;
             int end = line.End;
 
-            //var index = textViewLines.GetIndexOfTextLine(line);
-
-                //    var match = todoLineRegex.Match(text);
-                //    if (match.Success)
             foreach (var tag in this._createTagAggregator.GetTags(line.Extent))
             {
                 foreach (var span in tag.Span.GetSpans(_view.TextSnapshot))
                 {
-                    //int matchStart = line.Start.Position + span.Index;
-                    //var span = new SnapshotSpan(_view.TextSnapshot, Span.FromBounds(matchStart, matchStart + match.Length));
                     SetBoundary(textViewLines, span);
-
-                    string text = null;
-                    if (TryGetText(_view, line, out text))
-                    {
-                        var top = _view.ViewportTop + 30;
-                        var left = _view.ViewportRight - 30 - 162;
-
-                        text = text.Trim();
-                        var match = todoLineRegex.Match(text);
-                        CreateNote(text.Substring(match.Index + match.Length), left, top);
-                    }
                 }
             }
-        }
-
-        // jared parson: https://gist.github.com/4320643
-
-        /// <summary>
-        /// This will get the text of the ITextView line as it appears in the actual user editable 
-        /// document. 
-        /// </summary>
-        public static bool TryGetText(IWpfTextView textView, ITextViewLine textViewLine, out string text)
-        {
-            var extent = textViewLine.Extent;
-            var bufferGraph = textView.BufferGraph;
-            try
-            {
-                var collection = bufferGraph.MapDownToSnapshot(extent, SpanTrackingMode.EdgeInclusive, textView.TextSnapshot);
-                var span = new SnapshotSpan(collection[0].Start, collection[collection.Count - 1].End);
-                //text = span.ToString();
-                text = span.GetText();
-                return true;
-            }
-            catch
-            {
-                text = null;
-                return false;
-            }
-        }
-
-        // TODO namespace and project name settlement.
-        private void CreateNote(string message, double left, double top)
-        {
-            /*var note = new ViewportNotification();
-            note.DataContext = new
-            {
-                ReminderMessage = message
-            };
-
-            note.Width = 162;
-            note.Height = 100;
-
-            //Place the image in the top right hand corner of the Viewport
-            Canvas.SetLeft(note, left);
-            Canvas.SetTop(note, top);
-
-            top += note.Height + 15;
-
-            //add the image to the adornment layer and make it relative to the viewport
-            _layer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, note, null);
-            */
         }
 
         public void SetBoundary(IWpfTextViewLineCollection textViewLines, SnapshotSpan span)

@@ -11,13 +11,14 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System.Diagnostics;
+using ninlabs.attachables;
 
 namespace TodoArdornment
 {
     public class TodoTagger : ITagger<TodoGlyphTag>
     {
         public event EventHandler<Microsoft.VisualStudio.Text.SnapshotSpanEventArgs> TagsChanged;
-        Regex todoLineRegex = new Regex(@"\/\/\s*TODO\b");
+        public static Regex todoLineRegex = new Regex(@"\/\/\s*TODO\b");
         ITextView _textView;
 
         internal TodoTagger(ITextView textView)
@@ -136,8 +137,26 @@ namespace TodoArdornment
         public void Invoke()
         {
             //m_span.TextBuffer.Replace(m_span.GetSpan(m_snapshot), m_upper);
-            m_enabled = false;
-            this.m_tagger.RaiseTagsChanged(m_span.GetSpan(m_snapshot));
+            if (AttachablesPackage.Manager != null)
+            {
+                try
+                {
+                    var text = m_span.GetEndPoint(m_snapshot).GetContainingLine().Extent.GetText();
+
+                    text = text.Trim();
+                    var match = TodoTagger.todoLineRegex.Match(text);
+                    text = text.Substring(match.Index + match.Length);
+
+                    AttachablesPackage.Manager.AttachReminder(text.Trim(), "");
+
+                    m_enabled = false;
+                    this.m_tagger.RaiseTagsChanged(m_span.GetSpan(m_snapshot));
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                }
+            }  
         }
 
         public string DisplayText

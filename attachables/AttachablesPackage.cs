@@ -8,6 +8,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using ninlabs.attachables.Storage;
 
 namespace ninlabs.attachables
 {
@@ -34,7 +35,7 @@ namespace ninlabs.attachables
     [Guid(GuidList.guidAttachablesPkgString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    //[ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string)]
 
     public sealed class AttachablesPackage : Package
     {
@@ -89,6 +90,8 @@ namespace ninlabs.attachables
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            // TODO set to APPLocal
+            RemindersContext.ConfigureDatabase("");
             Manager = new ReminderManager();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)

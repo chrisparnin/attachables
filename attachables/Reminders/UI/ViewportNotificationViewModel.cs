@@ -20,7 +20,7 @@ namespace ninlabs.attachables.UI
                 {
                     this.Reminder.IsCompleted = true;
                     AttachablesPackage.Manager.SaveReminder(this.Reminder);
-                    note.RemoveAdornment(this.Reminder.Id);
+                    //note.RemoveAdornment(this.Reminder.Id);
                 },
                 () => { return true; }
                 );
