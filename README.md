@@ -17,10 +17,12 @@ To use, you simply can create a reminder note in the editor `// TODO Explore oth
 
 ![attach](https://raw.github.com/chrisparnin/attachables/master/doc/attach.png)
 
-- **Attach:** The reminder is attached to the corner of the editor viewport.  Display can be affected by your proximity to initial place of creation: e.g same project, same namespace, etc.
-- **When:** The reminder is not displayed until a future time, e.g. next day, next week.
+#### TODO actions: 
 
-Other actions: 
+- **Attach:** A reminder is attached to the corner of the editor viewport.  Display can be affected by your proximity to initial place of creation: e.g same project, same namespace, etc.
+- **When:** A reminder is not displayed until a future time, e.g. next day, next week.
+
+#### Attachable actions: 
 
 - **Snooze:** Hide a reminder for the next 8 hours.
 - **Done:** Complete and remove reminder.
