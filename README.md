@@ -1,7 +1,9 @@
 attachables
 ===========
 
-`attachables` is a Visual Studio exstension that allows you to attach reminders where and when you need them. 
+`attachables` allows you to attach reminders where and when you need them in your code editor.  attachables is currently available as a Visual Studio extension.
+
+![viewport](https://raw.github.com/chrisparnin/attachables/master/doc/viewport.png)
 
 ### Why use attachables?
 
@@ -11,14 +13,12 @@ Research has have found developers often use ad-hoc tactics, such as inserting i
 
 ### How to use attachables
 
-To use, you simply can create a reminder note in the editor '// TODO Rename namespace to something better', then choose a way you want to be reminded from the dropdown menu.
+To use, you simply can create a reminder note in the editor `// TODO Explore other analyzer`, then choose a way you want to be reminded from the dropdown menu.
 
 ![attach](https://raw.github.com/chrisparnin/attachables/master/doc/attach.png)
 
-- **Attach:** The reminder is attached in the corner of the editor viewport.  Display can be affected by your proximity to initial place of creation: e.g same project, same namespace, etc.
+- **Attach:** The reminder is attached to the corner of the editor viewport.  Display can be affected by your proximity to initial place of creation: e.g same project, same namespace, etc.
 - **When:** The reminder is not displayed until a future time, e.g. next day, next week.
-
-![viewport](https://raw.github.com/chrisparnin/attachables/master/doc/viewport.png)
 
 Other actions: 
 
