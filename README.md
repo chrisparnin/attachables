@@ -1,9 +1,7 @@
 attachables
 ===========
 
-`attachables` allows you to attach reminders where and when you need them in your code editor.  attachables is currently available as a Visual Studio extension.
-
-![viewport](https://raw.github.com/chrisparnin/attachables/master/doc/viewport.png)
+`attachables` allows you to attach reminders where and when you need them in your code editor.  It is currently available as a [Visual Studio extension]().
 
 ### Why use attachables?
 
@@ -12,6 +10,8 @@ Prospective memory (pm) helps us remember to perform an action in the future. We
 Research has have found developers often use ad-hoc tactics, such as inserting intentional compile errors to in order to introduce reminders in their code.  There should be a better way!
 
 ### How to use attachables
+
+![viewport](https://raw.github.com/chrisparnin/attachables/master/doc/viewport.png)
 
 To use, you simply can create a reminder note in the editor `// TODO Explore other analyzer`, then choose a way you want to be reminded from the dropdown menu.
 

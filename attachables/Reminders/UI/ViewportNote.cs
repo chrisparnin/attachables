@@ -22,8 +22,8 @@ namespace ninlabs.attachables.UI
 
         Dictionary<long, UserControl> _notes = new Dictionary<long, UserControl>();
 
-        private const int NoteWidth = 162;
-        private const int NoteHeight = 100;
+        private const int NoteWidth = 362;
+        private const int NoteHeight = 50;
 
         public ViewportNote(IWpfTextView view)
         {
