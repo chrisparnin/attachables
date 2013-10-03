@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
+  <Identifier Id="2f0b2fc6-4251-4a42-a756-e3e6051bff7b">
+    <Name>attachables</Name>
+    <Author>ninlabs</Author>
+    <Version>1.0.0.0</Version>
+    <Description xml:space="preserve">Post contextual reminders in your IDE windows.</Description>
+    <Locale>1033</Locale>
+    <MoreInfoUrl>https://github.com/chrisparnin/attachables</MoreInfoUrl>
+    <License>License.rtf</License>
+    <GettingStartedGuide>https://github.com/chrisparnin/attachables</GettingStartedGuide>
+    <SupportedProducts>
+      <VisualStudio Version="10.0">
+        <Edition>Ultimate</Edition>
+        <Edition>Premium</Edition>
+        <Edition>Pro</Edition>
+        <Edition>IntegratedShell</Edition>
+      </VisualStudio>
+      <VisualStudio Version="11.0">
+        <Edition>Ultimate</Edition>
+        <Edition>Premium</Edition>
+        <Edition>Pro</Edition>
+        <Edition>IntegratedShell</Edition>
+      </VisualStudio>
+      <VisualStudio Version="12.0">
+        <Edition>Ultimate</Edition>
+        <Edition>Premium</Edition>
+        <Edition>Pro</Edition>
+        <Edition>IntegratedShell</Edition>
+      </VisualStudio>
+      <IsolatedShell Version="6.0">AtmelStudio</IsolatedShell>
+      <IsolatedShell Version="6.1">AtmelStudio</IsolatedShell>
+    </SupportedProducts>
+    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="5.0" />
+  </Identifier>
+  <References />
+  <Content>
+    <MefComponent>|%CurrentProject%|</MefComponent>
+  </Content>
+</Vsix>
