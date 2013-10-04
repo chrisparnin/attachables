@@ -1,7 +1,7 @@
 attachables
 ===========
 
-`attachables` allows you to attach reminders where and when you need them in your code editor.  It is currently available as a [Visual Studio extension]().
+`attachables` allows you to attach reminders where and when you need them in your code editor.  It is currently available as a [Visual Studio extension](http://visualstudiogallery.msdn.microsoft.com/850937ba-ff0b-43cb-badd-4e273b508c32).
 
 ### Why use attachables?
 
@@ -35,9 +35,9 @@ Additional actions are availabe if you hover over a reminder.
 
 ### Installing attachables
 
-- Will be available in the Visual Studio gallery shortly. 
+- Download .vsix and double click to install from [Visual Studio Gallery](http://visualstudiogallery.msdn.microsoft.com/850937ba-ff0b-43cb-badd-4e273b508c32), or search for "attachables" in Online Gallery in "Visual Studio's Tools > Extensions and Updates" tool menu.
 
-- To install from source, first install the [Visual Studio SDK 2012](http://www.microsoft.com/en-us/download/details.aspx?id=30668) or [2010](http://www.microsoft.com/en-us/download/details.aspx?id=21835) in order to build project.  Then install the resulting .VSIX file.
+- To install from source, first install the [Visual Studio SDK 2012](http://www.microsoft.com/en-us/download/details.aspx?id=30668) or [2010](http://www.microsoft.com/en-us/download/details.aspx?id=21835) in order to build project.  Then install the resulting .vsix file.
 
 ### Other platforms
 
