@@ -42,7 +42,7 @@ namespace ninlabs.attachables
 
         public AttachablesPackage()
         {
-            // TODO Have the menu bring up list of reminders.e
+            // TODO Have the menu bring up list of reminders.
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 

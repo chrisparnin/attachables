@@ -3,7 +3,7 @@
   <Identifier Id="2f0b2fc6-4251-4a42-a756-e3e6051bff7b">
     <Name>attachables</Name>
     <Author>ninlabs</Author>
-    <Version>1.0.2.3</Version>
+    <Version>1.0.3.0</Version>
     <Description xml:space="preserve">Attach reminders where and when you need them in your code editor.</Description>
     <Locale>1033</Locale>
     <MoreInfoUrl>https://github.com/chrisparnin/attachables</MoreInfoUrl>
@@ -28,8 +28,13 @@
     </SupportedProducts>
     <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="5.0" />
   </Identifier>
-  <References />
+  <References>
+   <Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">
+     <Name>Visual Studio MPF</Name>
+   </Reference>
+  </References>
   <Content>
+    <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>  
     <MefComponent>|%CurrentProject%|</MefComponent>
   </Content>
 </Vsix>
