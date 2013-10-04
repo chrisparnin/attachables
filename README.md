@@ -7,7 +7,7 @@ attachables
 
 Prospective memory (pm) helps us remember to perform an action in the future. We often use physical locations and cues, to remember daily activities like taking pills, or buying groceries. In digital spaces, there is often no equivalent device.
 
-Research has have found developers often use ad-hoc tactics, such as inserting intentional compile errors to in order to introduce reminders in their code.  There should be a better way!
+Research has have found developers often use ad-hoc tactics, such as inserting *intentional compile errors* to in order to introduce reminders in their code.  There should be a better way!
 
 ### How to use attachables
 
@@ -20,7 +20,7 @@ To use, you simply can create a reminder note in the editor `// TODO Explore oth
 #### TODO menu actions: 
 
 - **Attach here:** A reminder is attached to the corner of the editor viewport and only displayed when you are at this file.
-- **Attach everywhere:** A reminder is attached to the corner of the editor viewport in all code windows.  You really want to reminder it!
+- **Attach everywhere:** A reminder is attached to the corner of the editor viewport in all code windows.  You really want to remember it!
 - **Show next day:** A reminder will be displayed the next day in all code windows.
 - **Show next week:** A reminder will be displayed the next week in all code windows.  Probably not a big deal.
 
@@ -37,7 +37,7 @@ To use, you simply can create a reminder note in the editor `// TODO Explore oth
 
 ### Other platforms
 
-`attachables` is also available in chrome!  See https://github.com/chrisparnin/pm
+`attachables` is also available in Chrome!  See https://github.com/chrisparnin/pm
 
 ### Future Features
 
