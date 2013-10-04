@@ -33,16 +33,16 @@ namespace ninlabs.attachables
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(MyToolWindow))]
     [Guid(GuidList.guidAttachablesPkgString)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string)]
-
+    //[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
+    //[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
+    [ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]
     public sealed class AttachablesPackage : Package, IVsSolutionEvents
     {
         private uint m_solutionCookie = 0;
 
         public AttachablesPackage()
         {
+            // TODO Have the menu bring up list of reminders.e
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 

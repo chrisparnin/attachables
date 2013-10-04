@@ -8,6 +8,7 @@ using System.Reflection;
 using ninlabs.attachables.Models;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Diagnostics;
 
 namespace ninlabs.attachables.UI
 {
@@ -27,16 +28,23 @@ namespace ninlabs.attachables.UI
 
         public ViewportNote(IWpfTextView view)
         {
-            _view = view;
+            if (view != null)
+            {
+                _view = view;
 
-            //Grab a reference to the adornment layer that this adornment should be added to
-            _adornmentLayer = view.GetAdornmentLayer("ProspectiveNote");
+                //Grab a reference to the adornment layer that this adornment should be added to
+                _adornmentLayer = view.GetAdornmentLayer("ProspectiveNote");
 
-            _view.ViewportHeightChanged += delegate { this.onSizeChange(); };
-            _view.ViewportWidthChanged += delegate { this.onSizeChange(); };
-            _view.GotAggregateFocus += delegate { this.onSizeChange(); };
-            
-            AttachablesPackage.Manager.RemindersUpdated += Manager_RemindersUpdated;
+                _view.ViewportHeightChanged += delegate { this.onSizeChange(); };
+                _view.ViewportWidthChanged += delegate { this.onSizeChange(); };
+                _view.GotAggregateFocus += delegate { this.onSizeChange(); };
+
+                if (AttachablesPackage.Manager != null)
+                {
+                    AttachablesPackage.Manager.RemindersUpdated += Manager_RemindersUpdated;
+                }
+            }
+            Trace.WriteLine( string.Format("attachables: {0} {1}", view, AttachablesPackage.Manager) );
         }
 
         private void Manager_RemindersUpdated(object sender, EventArgs args)

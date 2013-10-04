@@ -28,15 +28,15 @@ namespace ninlabs.attachables.UI
 
         public ViewportNoteFactory()
         {
-            try
-            {
-                var ass = Assembly.GetExecutingAssembly();
-                Assembly.LoadFrom(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ass.Location), "Microsoft.Expression.Drawing.dll"));
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message);
-            }
+            //try
+            //{
+            //    var ass = Assembly.GetExecutingAssembly();
+            //    Assembly.LoadFrom(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ass.Location), "Microsoft.Expression.Drawing.dll"));
+            //}
+            //catch (Exception ex)
+            //{
+            //    Trace.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
