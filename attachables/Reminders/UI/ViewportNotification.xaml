@@ -28,7 +28,7 @@
                 <Grid Grid.Row="1">
                     <Label>
                         <Hyperlink Command="{Binding SnoozeCommand}">
-                            <TextBlock>Snooze</TextBlock>
+                            <TextBlock>Snooze <Run FontStyle="Italic" >(8 hours)</Run></TextBlock>
                         </Hyperlink>
                     </Label>
                     <Label HorizontalAlignment="Right">

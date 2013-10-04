@@ -26,8 +26,12 @@ To use, you simply can create a reminder note in the editor `// TODO Explore oth
 
 #### Attachable actions: 
 
+Additional actions are availabe if you hover over a reminder.
+
 - **Snooze:** Hide a reminder for the next 8 hours.
-- **Done:** Complete and remove reminder.
+- **Done:** Complete and remove reminder from display.
+
+![menu](https://raw.github.com/chrisparnin/attachables/master/doc/attachablesmenu.png)
 
 ### Installing attachables
 
