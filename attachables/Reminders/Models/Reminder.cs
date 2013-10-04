@@ -16,13 +16,6 @@ namespace ninlabs.attachables.Models
         public long Id { get; set; }
 
         public AbstractCondition Condition { get; set; }
-        //public String ConditionAsString
-        //{
-        //    get
-        //    {
-        //        return Condition.ToString();
-        //    }
-        //}
 
         public NotificationType NotificationType { get; set; }
 
@@ -31,5 +24,8 @@ namespace ninlabs.attachables.Models
         public bool IsCompleted { get; set; }
 
         public DateTime CreatedOn { get; set; }
+
+        public DateTime? SnoozeUntil { get; set; }
+
     }
 }

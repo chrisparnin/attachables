@@ -32,7 +32,8 @@ namespace ninlabs.attachables
                     ReminderMessage = r.ReminderMessage,
                     Condition = r.ConditionAsString.Deserialize<AbstractCondition>(),
                     IsCompleted = r.IsCompleted,
-                    CreatedOn = r.CreatedOn
+                    CreatedOn = r.CreatedOn,
+                    SnoozeUntil = r.SnoozeUntil
                 }).OrderBy(r => r.IsCompleted).ToList();
             }
         }
@@ -47,7 +48,8 @@ namespace ninlabs.attachables
                  },
                  CreatedOn = DateTime.Now,
                  NotificationType = NotificationType.Viewport,
-                 ReminderMessage = message
+                 ReminderMessage = message,
+                 SnoozeUntil = null
             });
         }
 
@@ -79,6 +81,7 @@ namespace ninlabs.attachables
                         NotificationType = reminder.NotificationType,
                         ReminderMessage = reminder.ReminderMessage,
                         IsCompleted = reminder.IsCompleted,
+                        SnoozeUntil = reminder.SnoozeUntil
                     };
                     var updated = db.Reminders.Add(dbReminder);
                     db.SaveChanges();
@@ -90,6 +93,7 @@ namespace ninlabs.attachables
                     dbReminder.NotificationType = reminder.NotificationType;
                     dbReminder.ReminderMessage = reminder.ReminderMessage;
                     dbReminder.IsCompleted = reminder.IsCompleted;
+                    dbReminder.SnoozeUntil = reminder.SnoozeUntil;
 
                     db.SaveChanges();
                 }
@@ -127,6 +131,12 @@ namespace ninlabs.attachables
                     SaveReminder(reminder);
                 }
             }
+        }
+
+        internal void SnoozeReminder(Reminder reminder)
+        {
+            reminder.SnoozeUntil = DateTime.Now.AddHours(8);
+            SaveReminder(reminder);
         }
     }
 }

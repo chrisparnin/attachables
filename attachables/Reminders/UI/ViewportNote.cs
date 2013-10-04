@@ -56,8 +56,10 @@ namespace ninlabs.attachables.UI
             var top = _view.ViewportTop + 30;
             var left = _view.ViewportRight - 30 - NoteWidth;
             foreach (var r in AttachablesPackage.Manager.GetReminders()
+                .ToList()
                 .Where(r => r.NotificationType == NotificationType.Viewport)
                 .Where(r => !r.IsCompleted)
+                .Where(r => r.SnoozeUntil == null || DateTime.Now >= r.SnoozeUntil.Value )
                 .Where(r => r.Condition.IsApplicable(r)))
             {
                 var note = new ViewportNotification();

@@ -20,4 +20,6 @@ namespace ninlabs.attachables.Storage
         public bool IsCompleted { get; set; }
 
         public DateTime CreatedOn { get; set; }
+
+        public DateTime? SnoozeUntil { get; set; }
     }}

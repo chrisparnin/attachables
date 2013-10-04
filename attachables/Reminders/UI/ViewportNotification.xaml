@@ -27,8 +27,8 @@
                     Text="{Binding ReminderMessage}"></TextBlock>
                 <Grid Grid.Row="1">
                     <Label>
-                        <Hyperlink>
-                            <TextBlock>Reschedule</TextBlock>
+                        <Hyperlink Command="{Binding SnoozeCommand}">
+                            <TextBlock>Snooze</TextBlock>
                         </Hyperlink>
                     </Label>
                     <Label HorizontalAlignment="Right">

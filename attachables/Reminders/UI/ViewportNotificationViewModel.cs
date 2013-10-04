@@ -24,6 +24,13 @@ namespace ninlabs.attachables.UI
                 },
                 () => { return true; }
                 );
+
+            this.SnoozeCommand = new RelayCommand(() =>
+                {
+                    AttachablesPackage.Manager.SnoozeReminder(this.Reminder);
+                },
+                () => { return true; });
+
         }
 
         public string ReminderMessage
@@ -33,6 +40,12 @@ namespace ninlabs.attachables.UI
         }
 
         public ICommand DoneCommand
+        {
+            get;
+            set;
+        }
+
+        public ICommand SnoozeCommand
         {
             get;
             set;
