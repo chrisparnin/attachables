@@ -143,6 +143,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Reminders\Adornments\Actions\AttachAction.cs" />
+    <Compile Include="Reminders\Adornments\Actions\WhenAction.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornment.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornmentFactory.cs" />
     <Compile Include="Reminders\Adornments\TodoGlyphTag.cs" />
@@ -198,6 +200,7 @@
     <Content Include="License.rtf">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\time.png" />
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
@@ -216,6 +219,7 @@
     <None Include="Resources\Images.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\attach.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>

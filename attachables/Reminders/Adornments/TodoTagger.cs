@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System.Diagnostics;
 using ninlabs.attachables;
+using ninlabs.attachables.Reminders.Adornments.Actions;
+using ninlabs.attachables.Util;
 
 namespace TodoArdornment
 {
@@ -81,14 +83,34 @@ namespace TodoArdornment
 
         private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span)
         {
-            List<SmartTagActionSet> actionSetList = new List<SmartTagActionSet>();
-            List<ISmartTagAction> actionList = new List<ISmartTagAction>();
-
             ITrackingSpan trackingSpan = span.Snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
-            actionList.Add(new AttachAction(trackingSpan, this));
-            SmartTagActionSet actionSet = new SmartTagActionSet(actionList.AsReadOnly());
-            actionSetList.Add(actionSet);
+
+            var attachActionList = new List<ISmartTagAction>();
+            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach here", CurrentFilePath()));
+            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach everywhere", ""));
+
+            var whenActionList = new List<ISmartTagAction>();
+            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next day", TimeSpan.FromDays(1)));
+            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next week", TimeSpan.FromDays(7)));
+
+            // list of action sets...
+            var actionSetList = new List<SmartTagActionSet>();
+            actionSetList.Add(new SmartTagActionSet(attachActionList.AsReadOnly()));
+            actionSetList.Add(new SmartTagActionSet(whenActionList.AsReadOnly()));
+
             return actionSetList.AsReadOnly();
+        }
+
+        private string CurrentFilePath()
+        {
+            try
+            {
+                return "file;" + CurrentPositionHelper.GetCurrentFile();
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
         }
 
         // Based on twitter convo with Jared Parson: https://gist.github.com/4320643
@@ -113,74 +135,6 @@ namespace TodoArdornment
                 text = null;
                 return false;
             }
-        }
-    }
-
-    internal class AttachAction : ISmartTagAction
-    {
-        private ITrackingSpan m_span;
-        private string m_upper;
-        private string m_display;
-        private ITextSnapshot m_snapshot;
-        private bool m_enabled = true;
-        TodoTagger m_tagger;
-
-        public AttachAction(ITrackingSpan span, TodoTagger tagger)
-        {
-            m_span = span;
-            m_snapshot = span.TextBuffer.CurrentSnapshot;
-            m_upper = span.GetText(m_snapshot).ToUpper();
-            m_display = "Attach";
-            m_tagger = tagger;
-        }
-
-        public void Invoke()
-        {
-            //m_span.TextBuffer.Replace(m_span.GetSpan(m_snapshot), m_upper);
-            if (AttachablesPackage.Manager != null)
-            {
-                try
-                {
-                    var text = m_span.GetEndPoint(m_snapshot).GetContainingLine().Extent.GetText();
-
-                    text = text.Trim();
-                    var match = TodoTagger.todoLineRegex.Match(text);
-                    text = text.Substring(match.Index + match.Length);
-
-                    AttachablesPackage.Manager.AttachReminder(text.Trim(), "");
-
-                    m_enabled = false;
-                    this.m_tagger.RaiseTagsChanged(m_span.GetSpan(m_snapshot));
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex.Message);
-                }
-            }  
-        }
-
-        public string DisplayText
-        {
-            get { return m_display; }
-        }
-        public ImageSource Icon
-        {
-            get { return null; }
-        }
-        public bool IsEnabled
-        {
-            get { return m_enabled; }
-        }
-
-        public ISmartTagSource Source
-        {
-            get;
-            private set;
-        }
-
-        public ReadOnlyCollection<SmartTagActionSet> ActionSets
-        {
-            get { return null; }
         }
     }
 }
