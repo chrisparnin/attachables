@@ -31,6 +31,13 @@ namespace ninlabs.attachables.UI
                 },
                 () => { return true; });
 
+            this.GotoCommand = new RelayCommand(() =>
+                {
+                    AttachablesPackage.Manager.GotoReminder(this.Reminder);
+                },
+                () => { return true; });
+
+        
         }
 
         public string ReminderMessage
@@ -50,6 +57,13 @@ namespace ninlabs.attachables.UI
             get;
             set;
         }
+
+        public ICommand GotoCommand
+        {
+            get;
+            set;
+        }
+
 
         public Reminder Reminder { get; set; }
     }

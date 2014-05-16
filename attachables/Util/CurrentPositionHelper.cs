@@ -7,6 +7,7 @@ using Microsoft.VisualStudio;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace ninlabs.attachables.Util
 {
@@ -17,6 +18,29 @@ namespace ninlabs.attachables.Util
             m_applicationObject = Package.GetGlobalService(typeof(DTE)) as DTE;
         }
         static DTE m_applicationObject;
+
+        public static void NavigateTo(string FilePath, int SpanStart = 0)
+        {
+            //IVsUIShell service = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+            //Guid pguidCmdGroup = VSConstants.GUID_VSStandardCommandSet97;
+            //object pvaIn = string.Format(CultureInfo.InvariantCulture, "\"{0}\"", new object[] { FilePath });
+            //service.PostExecCommand(ref pguidCmdGroup, 0xde, 2, ref pvaIn);
+
+            uint ItemID;
+            IVsWindowFrame WindowFrame;
+            IVsTextView TextView;
+            IVsUIHierarchy Hierarchy;
+            VsShellUtilities.OpenDocument(ServiceProvider.GlobalProvider, FilePath, Guid.Empty, out Hierarchy, out ItemID, out WindowFrame, out TextView);
+
+            if (TextView != null)
+            {
+                TextView.CenterLines(SpanStart, 1);
+                //TextView.EnsureSpanVisible(new TextSpan() { iStartLine = Error.Line, iEndLine = Error.Line + 1, iStartIndex = Error.Column, iEndIndex = Error.Column + 1 });
+                TextView.SetCaretPos(SpanStart, 0);
+            }
+        }
+
+
         public static string GetCurrentProject()
         {
             IntPtr hierarchyPtr, selectionContainerPtr;

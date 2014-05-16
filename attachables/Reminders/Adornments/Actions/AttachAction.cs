@@ -41,7 +41,7 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
             }
         }
 
-        public AttachAction(ITrackingSpan span, TodoTagger tagger, string display, string path)
+        public AttachAction(ITrackingSpan span, TodoTagger tagger, string display, string path, string filePath)
         {
             m_span = span;
             m_snapshot = span.TextBuffer.CurrentSnapshot;
@@ -49,6 +49,7 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
             m_display = display;
             m_path = path;
             m_tagger = tagger;
+            this.FileLocation = filePath;
         }
 
         public void Invoke()
@@ -57,13 +58,14 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
             {
                 try
                 {
-                    var text = m_span.GetEndPoint(m_snapshot).GetContainingLine().Extent.GetText();
+                    var line = m_span.GetEndPoint(m_snapshot).GetContainingLine();
+                    var text = line.Extent.GetText();
 
                     text = text.Trim();
                     var match = TodoTagger.todoLineRegex.Match(text);
                     text = text.Substring(match.Index + match.Length);
 
-                    AttachablesPackage.Manager.AttachReminder(text.Trim(), m_path);
+                    AttachablesPackage.Manager.AttachReminder(text.Trim(), m_path, FileLocation, line.LineNumber);
 
                     m_enabled = false;
                     this.m_tagger.RaiseTagsChanged(m_span.GetSpan(m_snapshot));
@@ -74,6 +76,13 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
                 }
             }
         }
+
+        public string FileLocation
+        {
+            get;
+            set;
+        }
+
 
         public string DisplayText
         {

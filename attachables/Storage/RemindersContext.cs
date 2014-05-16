@@ -9,7 +9,7 @@ using ninlabs.attachables.Models;
 
 namespace ninlabs.attachables.Storage
 {
-    class RemindersContext : DbContext
+    public class RemindersContext : DbContext
     {
         public DbSet<ReminderContract> Reminders { get; set; }
 
@@ -21,7 +21,8 @@ namespace ninlabs.attachables.Storage
 
         public static void ConfigureDatabase(string path)
         {
-            Database.SetInitializer<RemindersContext>(new DropCreateDatabaseIfModelChanges<RemindersContext>());
+            Database.SetInitializer<RemindersContext>(new RemindersInitializer());
+            //Database.SetInitializer<RemindersContext>(new DropCreateDatabaseIfModelChanges<RemindersContext>());
             Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0",
                 path, "");
         }

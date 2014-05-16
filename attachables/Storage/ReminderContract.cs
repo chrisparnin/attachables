@@ -7,7 +7,7 @@ using ninlabs.attachables.Models;
 
 namespace ninlabs.attachables.Storage
 {
-    class ReminderContract
+    public class ReminderContract
     {
         public long Id { get; set; }
 
@@ -22,4 +22,7 @@ namespace ninlabs.attachables.Storage
         public DateTime CreatedOn { get; set; }
 
         public DateTime? SnoozeUntil { get; set; }
+
+        public string SourcePath { get; set; }
+        public int LineStart { get; set; }
     }}

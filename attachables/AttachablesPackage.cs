@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using ninlabs.attachables.Storage;
+using System.Data.Entity.Migrations;
 
 namespace ninlabs.attachables
 {
@@ -44,6 +45,12 @@ namespace ninlabs.attachables
         {
             // TODO Have the menu bring up list of reminders.
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+
+            // Start database migration.
+            //var migratorConfig = new Migrations.Configuration();
+            //migratorConfig.AutomaticMigrationsEnabled = true;
+            //var dbMigrator = new DbMigrator(migratorConfig);
+            //dbMigrator.Update("0");
         }
 
         public static ReminderManager Manager

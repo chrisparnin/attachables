@@ -146,6 +146,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\AddTodoSource.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Reminders\Adornments\Actions\AttachAction.cs" />
     <Compile Include="Reminders\Adornments\Actions\WhenAction.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornment.cs" />
@@ -166,7 +168,9 @@
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Reminders\ToolWindows\MyToolWindow.cs" />
+    <Compile Include="Storage\Initializier.cs" />
     <Compile Include="Storage\ReminderContract.cs" />
+    <Compile Include="Storage\RemindersInitializer.cs" />
     <Compile Include="VSIX\Guids.cs" />
     <Compile Include="Resources\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

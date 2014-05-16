@@ -85,13 +85,15 @@ namespace TodoArdornment
         {
             ITrackingSpan trackingSpan = span.Snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
+            var filePath = CurrentFilePathRaw();
+
             var attachActionList = new List<ISmartTagAction>();
-            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach here", CurrentFilePath()));
-            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach everywhere", ""));
+            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach here", CurrentFilePath(), filePath));
+            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach everywhere", "", filePath));
 
             var whenActionList = new List<ISmartTagAction>();
-            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next day", TimeSpan.FromDays(1)));
-            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next week", TimeSpan.FromDays(7)));
+            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next day", TimeSpan.FromDays(1), filePath));
+            whenActionList.Add(new WhenAction(trackingSpan, this, "Show next week", TimeSpan.FromDays(7), filePath));
 
             // list of action sets...
             var actionSetList = new List<SmartTagActionSet>();
@@ -106,6 +108,18 @@ namespace TodoArdornment
             try
             {
                 return "file;" + CurrentPositionHelper.GetCurrentFile();
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
+
+        private string CurrentFilePathRaw()
+        {
+            try
+            {
+                return CurrentPositionHelper.GetCurrentFile();
             }
             catch (Exception ex)
             {

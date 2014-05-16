@@ -26,12 +26,23 @@
                     HorizontalAlignment="Center" VerticalAlignment="Center" 
                     Text="{Binding ReminderMessage}"></TextBlock>
                 <Grid Grid.Row="1">
-                    <Label>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0">
+                        <Hyperlink Command="{Binding GotoCommand}">
+                            <TextBlock>Goto</TextBlock>
+                        </Hyperlink>
+                    </Label>
+                    <Label Grid.Column="1">
                         <Hyperlink Command="{Binding SnoozeCommand}">
                             <TextBlock>Snooze <Run FontStyle="Italic" >(8 hours)</Run></TextBlock>
                         </Hyperlink>
                     </Label>
-                    <Label HorizontalAlignment="Right">
+                    <Label Grid.Column="2">
                         <Hyperlink Command="{Binding DoneCommand}">
                             <TextBlock>Done</TextBlock>
                         </Hyperlink>

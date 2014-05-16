@@ -27,5 +27,7 @@ namespace ninlabs.attachables.Models
 
         public DateTime? SnoozeUntil { get; set; }
 
+        public string SourcePath { get; set; }
+        public int LineStart { get; set; }
     }
 }

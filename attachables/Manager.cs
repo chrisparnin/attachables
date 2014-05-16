@@ -33,12 +33,14 @@ namespace ninlabs.attachables
                     Condition = r.ConditionAsString.Deserialize<AbstractCondition>(),
                     IsCompleted = r.IsCompleted,
                     CreatedOn = r.CreatedOn,
-                    SnoozeUntil = r.SnoozeUntil
+                    SnoozeUntil = r.SnoozeUntil,
+                    SourcePath = r.SourcePath,
+                    LineStart = r.LineStart
                 }).OrderBy(r => r.IsCompleted).ToList();
             }
         }
 
-        public void AttachReminder(string message, string path)
+        public void AttachReminder(string message, string path, string sourcePath, int lineStart)
         {
             SaveReminder(new Reminder()
             {
@@ -49,11 +51,14 @@ namespace ninlabs.attachables
                  CreatedOn = DateTime.Now,
                  NotificationType = NotificationType.Viewport,
                  ReminderMessage = message,
-                 SnoozeUntil = null
+                 SnoozeUntil = null,
+                 SourcePath = sourcePath,
+                 LineStart = lineStart
+
             });
         }
 
-        public void WhenDateShowReminder(string message, DateTime triggerBy)
+        public void WhenDateShowReminder(string message, DateTime triggerBy, string sourcePath, int lineStart)
         {
             SaveReminder(new Reminder()
             {
@@ -63,7 +68,9 @@ namespace ninlabs.attachables
                 },
                 CreatedOn = DateTime.Now,
                 NotificationType = NotificationType.Viewport,
-                ReminderMessage = message
+                ReminderMessage = message,
+                SourcePath = sourcePath,
+                LineStart = lineStart
             });
         }
 
@@ -81,7 +88,9 @@ namespace ninlabs.attachables
                         NotificationType = reminder.NotificationType,
                         ReminderMessage = reminder.ReminderMessage,
                         IsCompleted = reminder.IsCompleted,
-                        SnoozeUntil = reminder.SnoozeUntil
+                        SnoozeUntil = reminder.SnoozeUntil,
+                        SourcePath = reminder.SourcePath,
+                        LineStart = reminder.LineStart
                     };
                     var updated = db.Reminders.Add(dbReminder);
                     db.SaveChanges();
@@ -94,6 +103,8 @@ namespace ninlabs.attachables
                     dbReminder.ReminderMessage = reminder.ReminderMessage;
                     dbReminder.IsCompleted = reminder.IsCompleted;
                     dbReminder.SnoozeUntil = reminder.SnoozeUntil;
+                    dbReminder.SourcePath = reminder.SourcePath;
+                    dbReminder.LineStart = reminder.LineStart;
 
                     db.SaveChanges();
                 }
@@ -137,6 +148,27 @@ namespace ninlabs.attachables
         {
             reminder.SnoozeUntil = DateTime.Now.AddHours(8);
             SaveReminder(reminder);
+        }
+
+        internal void GotoReminder(Reminder reminder)
+        {
+            if (reminder.Condition is Proximity )
+            {
+                var prox = reminder.Condition as Proximity;
+                //Console.WriteLine(prox.Path);
+                var parts = prox.Path.Split(';');
+                // Path = "" for Everywhere.
+
+                if (reminder.SourcePath != null)
+                {
+                    CurrentPositionHelper.NavigateTo(reminder.SourcePath, reminder.LineStart);
+                }
+                else if (parts.Length == 2 && parts[0] == "file")
+                {
+                    CurrentPositionHelper.NavigateTo(parts[1]);
+                }
+                // TODO Color scheme rotation like PM.
+            }
         }
     }
 }
