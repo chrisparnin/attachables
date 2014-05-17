@@ -30,5 +30,8 @@ namespace ninlabs.attachables.Models
 
         public string SourcePath { get; set; }
         public int LineStart { get; set; }
+
+        public DateTime? CompletedOn { get; set; }
+
     }
 }

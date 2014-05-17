@@ -25,4 +25,6 @@ namespace ninlabs.attachables.Storage
 
         public string SourcePath { get; set; }
         public int LineStart { get; set; }
+
+        public DateTime? CompletedOn { get; set; }
     }}

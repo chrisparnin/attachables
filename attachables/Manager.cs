@@ -35,7 +35,8 @@ namespace ninlabs.attachables
                     CreatedOn = r.CreatedOn,
                     SnoozeUntil = r.SnoozeUntil,
                     SourcePath = r.SourcePath,
-                    LineStart = r.LineStart
+                    LineStart = r.LineStart,
+                    CompletedOn = r.CompletedOn
                 }).OrderBy(r => r.IsCompleted).ToList();
             }
         }
@@ -53,8 +54,8 @@ namespace ninlabs.attachables
                  ReminderMessage = message,
                  SnoozeUntil = null,
                  SourcePath = sourcePath,
-                 LineStart = lineStart
-
+                 LineStart = lineStart,
+                 CompletedOn = null
             });
         }
 
@@ -70,7 +71,8 @@ namespace ninlabs.attachables
                 NotificationType = NotificationType.Viewport,
                 ReminderMessage = message,
                 SourcePath = sourcePath,
-                LineStart = lineStart
+                LineStart = lineStart,
+                CompletedOn = null
             });
         }
 
@@ -90,7 +92,8 @@ namespace ninlabs.attachables
                         IsCompleted = reminder.IsCompleted,
                         SnoozeUntil = reminder.SnoozeUntil,
                         SourcePath = reminder.SourcePath,
-                        LineStart = reminder.LineStart
+                        LineStart = reminder.LineStart,
+                        CompletedOn = reminder.CompletedOn
                     };
                     var updated = db.Reminders.Add(dbReminder);
                     db.SaveChanges();
@@ -105,6 +108,7 @@ namespace ninlabs.attachables
                     dbReminder.SnoozeUntil = reminder.SnoozeUntil;
                     dbReminder.SourcePath = reminder.SourcePath;
                     dbReminder.LineStart = reminder.LineStart;
+                    dbReminder.CompletedOn = reminder.CompletedOn;
 
                     db.SaveChanges();
                 }

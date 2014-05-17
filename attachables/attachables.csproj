@@ -148,6 +148,7 @@
   <ItemGroup>
     <Compile Include="Migrations\AddTodoSource.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\AddCompletedOnDate.cs" />
     <Compile Include="Reminders\Adornments\Actions\AttachAction.cs" />
     <Compile Include="Reminders\Adornments\Actions\WhenAction.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornment.cs" />

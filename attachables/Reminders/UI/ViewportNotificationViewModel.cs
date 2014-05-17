@@ -49,6 +49,7 @@ namespace ninlabs.attachables.UI
                 () =>
                 {
                     this.Reminder.IsCompleted = true;
+                    this.Reminder.CompletedOn = DateTime.Now;
                     AttachablesPackage.Manager.SaveReminder(this.Reminder);
                     //note.RemoveAdornment(this.Reminder.Id);
                 },
