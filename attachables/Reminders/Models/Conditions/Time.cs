@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -22,7 +23,7 @@ namespace ninlabs.attachables.Models.Conditions
             return "1 hour before " + TriggerBy;
         }
 
-        public override bool IsApplicable(Reminder reminder)
+        public override bool IsApplicable(Reminder reminder, IWpfTextView view)
         {
             return DateTime.Now.AddHours(-1) >= TriggerBy;
         }

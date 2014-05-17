@@ -15,6 +15,16 @@ namespace ninlabs.attachables.UI
     {
         static System.Windows.Media.SolidColorBrush[] colors;
         static Random random;
+
+        // Because Viewports are created so often, 
+        // a random assignment each time becomes too distracting        
+        static Dictionary<string, SolidColorBrush> TodoColorMapping;
+
+        // Track exposures to reminder, modify opacity accordingly.
+        static Dictionary<string, double> ExposureMapping;
+
+        static long Ticks;
+
         static ViewportNotificationViewModel()
         {
             colors = new System.Windows.Media.SolidColorBrush[]
@@ -24,10 +34,15 @@ namespace ninlabs.attachables.UI
                 new SolidColorBrush(Color.FromArgb(128,255,210,54))
             };
             random = new Random();
+
+            TodoColorMapping = new Dictionary<string, SolidColorBrush>();
+            ExposureMapping = new Dictionary<string, double>();
+
+            Ticks = DateTime.Now.Ticks;
         }
 
         ViewportNote Note;
-        public ViewportNotificationViewModel(ViewportNote note)
+        public ViewportNotificationViewModel(ViewportNote note, string reminderMessage)
         {
             this.Note = note;
             this.DoneCommand = new RelayCommand(
@@ -52,7 +67,31 @@ namespace ninlabs.attachables.UI
                 },
                 () => { return true; });
 
-            this.ColorBrush = colors[(int)Math.Floor(random.NextDouble() * colors.Length)];
+
+            if (!TodoColorMapping.ContainsKey(reminderMessage))
+            {
+                TodoColorMapping[reminderMessage] = colors[(int)Math.Floor(random.NextDouble() * colors.Length)];
+            }
+            this.ColorBrush = TodoColorMapping[reminderMessage];
+
+            if (!ExposureMapping.ContainsKey(reminderMessage))
+            {
+                ExposureMapping[reminderMessage] = 1.0;
+            }
+
+            ExposureMapping[reminderMessage] = Math.Max(.3, ExposureMapping[reminderMessage] * .95);
+            Opacity = ExposureMapping[reminderMessage];
+        }
+
+        public void ResetExposure()
+        {
+            ExposureMapping[ReminderMessage] = 1.0;
+        }
+
+        public double Opacity
+        {
+            get;
+            set;
         }
 
         public SolidColorBrush ColorBrush

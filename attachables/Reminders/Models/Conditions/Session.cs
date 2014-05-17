@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -20,7 +21,7 @@ namespace ninlabs.attachables.Models.Conditions
             return "On next session";
         }
 
-        public override bool IsApplicable(Reminder reminder)
+        public override bool IsApplicable(Reminder reminder, IWpfTextView view)
         {
             var now = DateTime.Now;
             //using (var db = new SessionsContext())

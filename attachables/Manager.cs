@@ -167,7 +167,6 @@ namespace ninlabs.attachables
                 {
                     CurrentPositionHelper.NavigateTo(parts[1]);
                 }
-                // TODO Color scheme rotation like PM.
             }
         }
     }

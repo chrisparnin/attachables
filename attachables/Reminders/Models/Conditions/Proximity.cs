@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ninlabs.attachables.Util;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace ninlabs.attachables.Models.Conditions
 {
@@ -24,7 +25,7 @@ namespace ninlabs.attachables.Models.Conditions
             return "Proximity near " + Path;
         }
 
-        public override bool IsApplicable(Reminder reminder)
+        public override bool IsApplicable(Reminder reminder, IWpfTextView view)
         {
             if (string.IsNullOrWhiteSpace(Path))
             {
@@ -46,7 +47,9 @@ namespace ninlabs.attachables.Models.Conditions
             }
             if (kind == "file")
             {
-                return data == CurrentPositionHelper.GetCurrentFile();
+                //return data == CurrentPositionHelper.GetCurrentFile();
+                var textDocument = view.TextBuffer.GetTextDocument();
+                return textDocument != null && textDocument.FilePath == data;
             }
             if (kind == "method")
             {

@@ -9,6 +9,9 @@ using ninlabs.attachables.Models;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Diagnostics;
+using ninlabs.attachables.Models.Conditions;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Text;
 
 namespace ninlabs.attachables.UI
 {
@@ -26,6 +29,8 @@ namespace ninlabs.attachables.UI
         private const int NoteWidth = 362;
         private const int NoteHeight = 50;
 
+        // TODO When viewport is split, what is displayed is inconsisent.
+        // TODO Consider sinsoidual function for reminder toggle.
         public ViewportNote(IWpfTextView view)
         {
             if (view != null)
@@ -68,19 +73,19 @@ namespace ninlabs.attachables.UI
                 .Where(r => r.NotificationType == NotificationType.Viewport)
                 .Where(r => !r.IsCompleted)
                 .Where(r => r.SnoozeUntil == null || DateTime.Now >= r.SnoozeUntil.Value )
-                .Where(r => r.Condition.IsApplicable(r)))
+                .Where(r => r.Condition.IsApplicable(r, _view)))
             {
                 var note = new ViewportNotification();
-                note.DataContext = new ViewportNotificationViewModel(this)
+                var model = new ViewportNotificationViewModel(this, r.ReminderMessage)
                 {
                     ReminderMessage = r.ReminderMessage,
                     Reminder = r
                 };
+                note.DataContext = model;
 
                 note.Width = NoteWidth;
                 note.Height = NoteHeight;
-                //note.Opacity = .50;
-                // TODO: Help I need a reminder.
+                note.Opacity = model.Opacity;
 
                 //Place the image in the top right hand corner of the Viewport
                 Canvas.SetLeft(note, left);

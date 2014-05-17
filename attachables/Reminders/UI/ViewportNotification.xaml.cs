@@ -20,9 +20,26 @@ namespace ninlabs.attachables.UI
     /// </summary>
     public partial class ViewportNotification : UserControl
     {
+        double prevOpacity;
         public ViewportNotification()
         {
             InitializeComponent();
+            this.MouseEnter += ViewportNotification_MouseEnter;
+            this.MouseLeave += ViewportNotification_MouseLeave;
+        }
+
+        void ViewportNotification_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //this.Opacity = this.prevOpacity;
+        }
+
+        private void ViewportNotification_MouseEnter(object sender, MouseEventArgs e)
+        {
+            //this.prevOpacity = this.Opacity;
+            //this.Opacity = 1.0;
+            this.Opacity = 1.0;
+            var model = this.DataContext as ViewportNotificationViewModel;
+            model.ResetExposure();
         }
     }
 }

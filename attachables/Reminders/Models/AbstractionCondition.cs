@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ninlabs.attachables.Models.Conditions;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace ninlabs.attachables.Models
 {
@@ -17,7 +18,7 @@ namespace ninlabs.attachables.Models
         [DataMember]
         public ConditionType Type { get; set; }
 
-        public virtual bool IsApplicable(Reminder reminder)
+        public virtual bool IsApplicable(Reminder reminder, IWpfTextView view)
         {
             return true;
         }

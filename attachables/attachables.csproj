@@ -190,6 +190,7 @@
     <Compile Include="Util\CurrentPositionHelper.cs" />
     <Compile Include="Util\RelayCommand.cs" />
     <Compile Include="Util\SerializationExtensions.cs" />
+    <Compile Include="VSUtilAndExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resources.resx">
