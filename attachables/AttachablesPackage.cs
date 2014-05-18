@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using ninlabs.attachables.Storage;
 using System.Data.Entity.Migrations;
+using EnvDTE80;
 
 namespace ninlabs.attachables
 {
@@ -104,18 +105,60 @@ namespace ninlabs.attachables
                 CommandID toolwndCommandID = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidRemindersWindow);
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
+
+                // Create the menu option in the error list window
+                CommandID errorListCommand = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidTodoByCancel);
+                OleMenuCommand errorMenuItem = new OleMenuCommand(this.CancelErrorItem, errorListCommand);
+                errorMenuItem.BeforeQueryStatus += new System.EventHandler(this.errorMenuItem_BeforeQueryStatus);
+                mcs.AddCommand(errorMenuItem);
+
             }
 
             IVsSolution solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(solution.AdviseSolutionEvents(this, out m_solutionCookie));
         }
+
+        private void CancelErrorItem(object sender, EventArgs e)
+        {
+            
+            EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
+            object[] objer = (object[])myErrorList.SelectedItems;
+            foreach (object item in objer)
+            {
+                var errorItem = item as ErrorItem;
+                if (errorItem != null)
+                {
+                    var errorTask = FindErrorTask(errorItem, AttachablesPackage.Manager.ErrorProvider);
+                    if (errorTask != null)
+                    {
+                        AttachablesPackage.Manager.ErrorProvider.Tasks.Remove(errorTask);
+                    }
+                }
+            }
+        }
+
+        private ErrorTask FindErrorTask(ErrorItem item, ErrorListProvider errorListMenu)
+        {
+            foreach (ErrorTask errorTask in errorListMenu.Tasks)
+            {
+                if (errorTask.Text == item.Description &&
+                    errorTask.Line == item.Line - 1 &&
+                    errorTask.Document == item.FileName)
+                    return errorTask;
+            }
+            return null;
+        }
+
+
         #endregion
 
+        EnvDTE.DTE dte;
         private void InitializeWithSolutionAndDTEReady()
         {
             string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
 
-            var dte = (EnvDTE.DTE)this.GetService(typeof(EnvDTE.DTE));
+            dte = (EnvDTE.DTE)this.GetService(typeof(EnvDTE.DTE));
             if (dte != null && dte.Solution != null)
             {
                 path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
@@ -126,7 +169,30 @@ namespace ninlabs.attachables
                 System.IO.Directory.CreateDirectory(path);
             }
             RemindersContext.ConfigureDatabase(path);
-            Manager = new ReminderManager();
+            Manager = new ReminderManager(this);
+        }
+
+        private void errorMenuItem_BeforeQueryStatus(object sender, System.EventArgs e)
+        {
+            OleMenuCommand menuItem = sender as OleMenuCommand;
+            using (ErrorListProvider errorListMenu = new ErrorListProvider(this))
+            {
+                EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+                ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
+                if (myErrorList.ErrorItems != null)
+                {
+                    if (myErrorList.ErrorItems.Count > 0)
+                    {
+                        menuItem.Enabled = true;
+                        menuItem.Visible = true;
+                    }
+                    else
+                    {
+                        menuItem.Enabled = false;
+                        menuItem.Visible = false;
+                    }
+                }
+            }
         }
 
         /// <summary>

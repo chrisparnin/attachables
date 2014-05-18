@@ -8,6 +8,8 @@ using ninlabs.attachables.Models;
 using ninlabs.attachables.Models.Conditions;
 using ninlabs.attachables.Storage;
 using ninlabs.attachables.Util;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace ninlabs.attachables
 {
@@ -15,6 +17,14 @@ namespace ninlabs.attachables
 
     public class ReminderManager
     {
+        public ErrorListProvider ErrorProvider { get; set; }
+        internal ReminderManager(IServiceProvider Provider) 
+        {
+            ErrorProvider = new ErrorListProvider(Provider);
+            ErrorProvider.ProviderName = "attachables";
+            ErrorProvider.ProviderGuid = new Guid(GuidList.guidAttachablesPkgString);
+        }
+
         public event RemindersUpdateEvent RemindersUpdated;
 
         public List<Reminder> GetReminders()
@@ -41,6 +51,60 @@ namespace ninlabs.attachables
             }
         }
 
+        public void TodoBy(string message, string date, string file, int line)
+        {
+            var ivsSolution = (IVsSolution)Package.GetGlobalService(typeof(IVsSolution));
+            //Get first project IVsHierarchy item (needed to link the task with a project)
+            IVsHierarchy hierarchyItem;
+            ivsSolution.GetProjectOfUniqueName(file, out hierarchyItem);
+ 
+            var newError = new ErrorTask()
+            {
+                ErrorCategory = TaskErrorCategory.Error,
+                Category = TaskCategory.BuildCompile,
+                Text = message + " not completed by " + date,
+                Document = file,
+                Line = line,
+                Column = 6,
+                HierarchyItem = hierarchyItem,
+                CanDelete = true
+            };
+
+            newError.Navigate += (sender, e) =>
+            {
+                //there are two Bugs in the errorListProvider.Navigate method:
+                //    Line number needs adjusting
+                //    Column is not shown
+                newError.Line++;
+                ErrorProvider.Navigate(newError, new Guid(EnvDTE.Constants.vsViewKindCode));
+                newError.Line--;
+            };
+
+            ErrorProvider.Tasks.Clear();	// clear previously created
+            ErrorProvider.Tasks.Add(newError);	// add item
+            ErrorProvider.Show(); 		// make sure it is visible
+
+                
+        }
+
+        // TODO Allow Todo, etc.
+        // TODO weird behavior sometimes with done being clicked, but subsquent actions not working...better refresh?
+        
+        // TODO when to check todo by ?  Startup...hook into before build?
+        // TODO handle to due parsing.
+        // TODO support some natural dates (Today, Tommorow, next week, next day)
+        // TODO regional parsing.
+
+        // TODO Edit TODO reminder text.
+
+
+        // If supporting Todo by, how to turn off?
+        // Option 1: Detect changes in deleted code.  Match against existing.
+        // Option 2: Need tag/autocomplete thing to turn on more often/hover instead of change.
+        // Option 3: Ability to turn off from Error List Provider.
+
+        // Option 3 works at the moment.
+
         public void AttachReminder(string message, string path, string sourcePath, int lineStart)
         {
             SaveReminder(new Reminder()
@@ -57,6 +121,8 @@ namespace ninlabs.attachables
                  LineStart = lineStart,
                  CompletedOn = null
             });
+
+            TodoBy(message, "Today", sourcePath, lineStart);
         }
 
         public void WhenDateShowReminder(string message, DateTime triggerBy, string sourcePath, int lineStart)

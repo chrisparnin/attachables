@@ -44,7 +44,10 @@
       <Group guid="guidAttachablesCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
-      
+
+      <Group guid="guidAttachablesCmdSet" id="GroupIdErrorList" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ERRORLIST"/>
+      </Group>
 
 
     </Groups>
@@ -79,6 +82,27 @@
       </Button>
 
 
+      <Button guid="guidAttachablesCmdSet" id="cmdidTodoByCancel" priority="0x0100" type="Button">
+        <Parent guid="guidAttachablesCmdSet" id="GroupIdErrorList" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>cmdidTodoByCancel</CommandName>
+          <ButtonText>Cancel</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidAttachablesCmdSet" id="cmdidTodoBySnooze" priority="0x0100" type="Button">
+        <Parent guid="guidAttachablesCmdSet" id="GroupIdErrorList" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>cmdidTodoBySnooze</CommandName>
+          <ButtonText>Snooze (8 hours)</ButtonText>
+        </Strings>
+      </Button>
+
+
     </Buttons>
    
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -108,6 +132,11 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidAttachablesCommand" value="0x0100" />
       <IDSymbol name="cmdidAttachablesWindow" value="0x0101" />
+
+      <IDSymbol name="GroupIdErrorList" value="0x1021" />
+      <IDSymbol name="cmdidTodoByCancel" value="0x200" />
+      <IDSymbol name="cmdidTodoBySnooze" value="0x201" />
+
     </GuidSymbol>
     
     
