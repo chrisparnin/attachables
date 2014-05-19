@@ -90,9 +90,10 @@ namespace ninlabs.attachables
         // TODO weird behavior sometimes with done being clicked, but subsquent actions not working...better refresh?
         
         // TODO when to check todo by ?  Startup...hook into before build?
-        // TODO handle to due parsing.
-        // TODO support some natural dates (Today, Tommorow, next week, next day)
-        // TODO regional parsing.
+        
+        // TODO Have "Due on" enter todo into database.
+
+        // TODO If can find todo by in db, then instead of "due on" action, it should have a mark done or edit/update date action.
 
         // TODO Edit TODO reminder text.
 

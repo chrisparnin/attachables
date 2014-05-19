@@ -29,7 +29,48 @@ namespace TodoArdornment
         {
             _textView = textView;
             _textView.LayoutChanged += OnLayoutChanged;
+            //_textView.MouseHover += _textView_MouseHover;
+            _textView.Caret.PositionChanged += Caret_PositionChanged;
         }
+
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            var point = e.NewPosition.BufferPosition;
+            //var span = e.View.GetTextElementSpan(point);
+            var span = point.GetContainingLine().Extent;
+            if (TagsChanged != null)
+            {
+                TagsChanged(this, new SnapshotSpanEventArgs(span));
+            }
+        }
+
+        void _textView_MouseHover(object sender, MouseHoverEventArgs e)
+        {
+            var point = new SnapshotPoint(e.View.TextSnapshot, e.Position);
+            //var span = e.View.GetTextElementSpan(point);
+            var span = point.GetContainingLine().Extent;
+            if (TagsChanged != null)
+            {
+                TagsChanged(this, new SnapshotSpanEventArgs(span));
+            }
+        }
+
+        // TODO Investigate ITrackingPoint for updating TODO state. (edit).
+
+        /*
+         *   SnapshotPoint? point = textView.BufferGraph.MapDownToFirstMatch(
+        new SnapshotPoint(textView.TextSnapshot, e.Position),
+        PointTrackingMode.Positive,
+        snapshot => textBuffers.Contains(snapshot.TextBuffer),
+        PositionAffinity.Predecessor
+      );
+      if ( point != null ) {
+        ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(
+          point.Value.Position, PointTrackingMode.Positive);
+        if ( provider.QuickInfoBroker.IsQuickInfoActive(textView) ) {
+          session = provider.QuickInfoBroker.TriggerQuickInfo(textView, triggerPoint, true);
+        }
+      }*/
 
         internal void RaiseTagsChanged(SnapshotSpan span)
         {
@@ -41,6 +82,14 @@ namespace TodoArdornment
 
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
+            if (e.OldSnapshot.GetText().ToLower()
+                .Contains("// todo by") 
+                )
+            {
+                // TODO how to handle deleting a todo by? reminder...
+                Console.WriteLine("");
+            }
+
             foreach (var span in e.NewOrReformattedSpans)
             {
                 if (TagsChanged != null)
@@ -48,6 +97,7 @@ namespace TodoArdornment
                     TagsChanged(this, new SnapshotSpanEventArgs(span));
                 }
             }
+
         }
 
         public IEnumerable<ITagSpan<TodoGlyphTag>> GetTags(Microsoft.VisualStudio.Text.NormalizedSnapshotSpanCollection spans)
@@ -90,8 +140,10 @@ namespace TodoArdornment
                         continue;
                     }
                     var actions = new ReadOnlyCollection<SmartTagActionSet>(new SmartTagActionSet[]{}.ToList());
-                    if (line != null &&
-                        _textView.Caret.ContainingTextViewLine.ContainsBufferPosition(span.Start))
+                    if (line != null && 
+                        //_textView.Caret.ContainingTextViewLine.ContainsBufferPosition(span.Start)
+                        true
+                        )
                     {
                          actions = GetSmartTagActions(spanNew, dueDate, friendly);
                     }
