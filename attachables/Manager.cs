@@ -87,7 +87,6 @@ namespace ninlabs.attachables
                 
         }
 
-        // TODO Allow Todo, etc.
         // TODO weird behavior sometimes with done being clicked, but subsquent actions not working...better refresh?
         
         // TODO when to check todo by ?  Startup...hook into before build?

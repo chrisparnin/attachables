@@ -14,13 +14,15 @@ using System.Diagnostics;
 using ninlabs.attachables;
 using ninlabs.attachables.Reminders.Adornments.Actions;
 using ninlabs.attachables.Util;
+using ninlabs.attachables.Reminders.Adornments;
 
 namespace TodoArdornment
 {
     public class TodoTagger : ITagger<TodoGlyphTag>
     {
         public event EventHandler<Microsoft.VisualStudio.Text.SnapshotSpanEventArgs> TagsChanged;
-        public static Regex todoLineRegex = new Regex(@"\/\/\s*TODO\b");
+        public static Regex todoLineRegex = new Regex(@"\/\/\s*TODO\s*(BY)?\b", RegexOptions.IgnoreCase);
+
         ITextView _textView;
 
         internal TodoTagger(ITextView textView)
@@ -58,11 +60,30 @@ namespace TodoArdornment
                 {
                     var point = span.Start.Add(match.Index);
                     var spanNew = new SnapshotSpan(span.Snapshot, new Span(point.Position, match.Length));
+                    var hasDueBy = false;
+                    if (match.Groups.Count == 2 && match.Groups[1].Value.ToLower() == "by" )
+                    {
+                        hasDueBy = true;
+                    }
 
                     ITextViewLine line = null;
+                    DateTime? dueDate = null;
+                    string friendly = null;
                     try
                     {
                         line = _textView.Caret.ContainingTextViewLine;
+                        if (hasDueBy)
+                        {
+                            var dateSpan = new SnapshotSpan(span.Snapshot, new Span(point.Position + match.Length, span.Length - match.Length));
+                            var str = dateSpan.GetText();
+
+                            DateMatcher matcher = new DateMatcher();
+                            dueDate = matcher.FromString(str, out friendly);
+                            
+                            // Bail if there isn't a good date found (should give visual feedback to dev).
+                            if (!dueDate.HasValue)
+                                continue;
+                        }
                     }
                     catch( Exception ex )
                     {
@@ -72,7 +93,7 @@ namespace TodoArdornment
                     if (line != null &&
                         _textView.Caret.ContainingTextViewLine.ContainsBufferPosition(span.Start))
                     {
-                         actions = GetSmartTagActions(spanNew);
+                         actions = GetSmartTagActions(spanNew, dueDate, friendly);
                     }
                     yield return new TagSpan<TodoGlyphTag>(spanNew, 
                         new TodoGlyphTag(SmartTagType.Ephemeral, actions)
@@ -81,7 +102,7 @@ namespace TodoArdornment
             }
         }
 
-        private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span)
+        private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span, DateTime? dueDate, string friendly)
         {
             ITrackingSpan trackingSpan = span.Snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
@@ -92,8 +113,19 @@ namespace TodoArdornment
             attachActionList.Add(new AttachAction(trackingSpan, this, "Attach everywhere", "", filePath));
 
             var whenActionList = new List<ISmartTagAction>();
+            if( dueDate.HasValue )
+            {
+                string actionTitle = "Due on " + dueDate.Value.ToShortDateString();
+                if (friendly != null )
+                {
+                    actionTitle = string.Format("Due on {0} ({1})", friendly, dueDate.Value.ToShortDateString());
+                }
+                whenActionList.Add(new WhenAction(trackingSpan, this, actionTitle, TimeSpan.FromDays(1), filePath));
+            }
             whenActionList.Add(new WhenAction(trackingSpan, this, "Show next day", TimeSpan.FromDays(1), filePath));
             whenActionList.Add(new WhenAction(trackingSpan, this, "Show next week", TimeSpan.FromDays(7), filePath));
+
+
 
             // list of action sets...
             var actionSetList = new List<SmartTagActionSet>();
@@ -127,28 +159,5 @@ namespace TodoArdornment
             }
         }
 
-        // Based on twitter convo with Jared Parson: https://gist.github.com/4320643
-
-        /// <summary>
-        /// This will get the text of the ITextView line as it appears in the actual user editable 
-        /// document. 
-        /// </summary>
-        public static bool TryGetText(IWpfTextView textView, ITextViewLine textViewLine, out string text)
-        {
-            var extent = textViewLine.Extent;
-            var bufferGraph = textView.BufferGraph;
-            try
-            {
-                var collection = bufferGraph.MapDownToSnapshot(extent, SpanTrackingMode.EdgeInclusive, textView.TextSnapshot);
-                var span = new SnapshotSpan(collection[0].Start, collection[collection.Count - 1].End);
-                text = span.GetText();
-                return true;
-            }
-            catch
-            {
-                text = null;
-                return false;
-            }
-        }
     }
 }

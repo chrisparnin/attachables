@@ -175,24 +175,29 @@ namespace ninlabs.attachables
         private void errorMenuItem_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuItem = sender as OleMenuCommand;
-            using (ErrorListProvider errorListMenu = new ErrorListProvider(this))
+            
+            EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
+
+            // If there is any error selected, enable menu command and return.
+            object[] objer = (object[])myErrorList.SelectedItems;
+            foreach (object item in objer)
             {
-                EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
-                ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
-                if (myErrorList.ErrorItems != null)
+                var errorItem = item as ErrorItem;
+                if (errorItem != null)
                 {
-                    if (myErrorList.ErrorItems.Count > 0)
+                    var errorTask = FindErrorTask(errorItem, AttachablesPackage.Manager.ErrorProvider);
+                    if (errorTask != null)
                     {
-                        menuItem.Enabled = true;
                         menuItem.Visible = true;
-                    }
-                    else
-                    {
-                        menuItem.Enabled = false;
-                        menuItem.Visible = false;
+                        menuItem.Enabled = true;
+                        return;
                     }
                 }
             }
+            // else disable
+            menuItem.Enabled = false;
+            menuItem.Visible = false;
         }
 
         /// <summary>

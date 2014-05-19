@@ -17,21 +17,33 @@ To use, you simply can create a reminder note in the editor `// TODO Explore oth
 
 ![attach](https://raw.github.com/chrisparnin/attachables/master/doc/attach.png)
 
+TODO notes can also have **due dates**.  Simply use the following format:
+`// TODO BY <a date> message`, where date is a day of the week, today, tomorrow, next day, next week, or a specific date such as 5/31/14 (date format is quite flexible).  Day of week and date format should work in your locale.
+
+![DueOn](https://raw.github.com/chrisparnin/attachables/master/doc/DueOn.png)
+
+
 #### TODO menu actions: 
 
 - **Attach here:** A reminder is attached to the corner of the editor viewport and only displayed when you are at this file.
 - **Attach everywhere:** A reminder is attached to the corner of the editor viewport in all code windows.  You really want to remember it!
+- **Due on:** A reminder that is note taken care of by the specified date will be displayed as a *compile error*!
 - **Show next day:** A reminder will be displayed the next day in all code windows.
 - **Show next week:** A reminder will be displayed the next week in all code windows.  Probably not a big deal.
 
 #### Attachable actions: 
 
-Additional actions are availabe if you hover over a reminder.
+Additional actions are available if you hover over a reminder.
 
+- **Goto:** Navigate to source of TODO note.
 - **Snooze:** Hide a reminder for the next 8 hours.
 - **Done:** Complete and remove reminder from display.
 
 ![menu](https://raw.github.com/chrisparnin/attachables/master/doc/attachablesmenu.png)
+
+If you have an expired todo note, you can use the context menu to *cancel* or *snooze* the reminder.
+
+![Cancel](https://raw.github.com/chrisparnin/attachables/master/doc/Cancel.png)
 
 ### Installing attachables
 

@@ -151,6 +151,7 @@
     <Compile Include="Migrations\AddCompletedOnDate.cs" />
     <Compile Include="Reminders\Adornments\Actions\AttachAction.cs" />
     <Compile Include="Reminders\Adornments\Actions\WhenAction.cs" />
+    <Compile Include="Reminders\Adornments\DateMatcher.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornment.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornmentFactory.cs" />
     <Compile Include="Reminders\Adornments\TodoGlyphTag.cs" />
