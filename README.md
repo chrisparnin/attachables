@@ -24,8 +24,11 @@ TODO notes can also have **due dates**.  Simply use the following format:
 
 ![DueOn](https://raw.github.com/chrisparnin/attachables/master/doc/DueOn.png)
 
+### Todo By Demo Gif
 
-#### TODO menu actions: 
+![TodoBy](https://raw.github.com/chrisparnin/attachables/master/doc/TodoBy.gif)
+
+### TODO menu actions: 
 
 - **Attach here:** A reminder is attached to the corner of the editor viewport and only displayed when you are at this file.
 - **Attach everywhere:** A reminder is attached to the corner of the editor viewport in all code windows.  You really want to remember it!
