@@ -15,6 +15,8 @@ Research has have found developers often use ad-hoc tactics, such as inserting *
 
 To use, you simply can create a reminder note in the editor `// TODO Explore other analyzer`, then choose a way you want to be reminded from the dropdown menu.
 
+Reminders can be attached to the Editor viewport, local to the current file, or displayed everywhere.  Attached reminders will fade during the programming session unless they are re-engaged by hovering over them.
+
 ![attach](https://raw.github.com/chrisparnin/attachables/master/doc/attach.png)
 
 TODO notes can also have **due dates**.  Simply use the following format:
