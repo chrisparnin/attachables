@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ninlabs.attachables.Models.Conditions;
+using ninlabs.attachables.Reminders.Models.Conditions;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace ninlabs.attachables.Models
@@ -13,6 +14,7 @@ namespace ninlabs.attachables.Models
     [KnownType(typeof(Time))]
     [KnownType(typeof(Session))]
     [KnownType(typeof(Proximity))]
+    [KnownType(typeof(DueBy))]
     public class AbstractCondition
     {
         [DataMember]

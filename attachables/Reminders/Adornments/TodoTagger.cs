@@ -35,13 +35,21 @@ namespace TodoArdornment
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
-            var point = e.NewPosition.BufferPosition;
-            //var span = e.View.GetTextElementSpan(point);
-            var span = point.GetContainingLine().Extent;
-            if (TagsChanged != null)
+            if (_textView.TextSnapshot.GetLineNumberFromPosition(e.NewPosition.BufferPosition) != _textView.TextSnapshot.GetLineNumberFromPosition(e.OldPosition.BufferPosition))
             {
-                TagsChanged(this, new SnapshotSpanEventArgs(span));
+                var point = e.NewPosition.BufferPosition;
+                //var span = e.View.GetTextElementSpan(point);
+                var span = point.GetContainingLine().Extent;
+
+                //var old = _textView.GetTextViewLineContainingBufferPosition(e.OldPosition.BufferPosition);
+                //var list = old.GetAdornmentTags(old.IdentityTag);
+
+                // for new position
+                RaiseTagsChanged(span);
+                // for old position ( which doesn't have caret, so no actions will show )
+                RaiseTagsChanged(e.OldPosition.BufferPosition.GetContainingLine().Extent);
             }
+
         }
 
         void _textView_MouseHover(object sender, MouseHoverEventArgs e)
@@ -82,14 +90,6 @@ namespace TodoArdornment
 
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            if (e.OldSnapshot.GetText().ToLower()
-                .Contains("// todo by") 
-                )
-            {
-                // TODO how to handle deleting a todo by? reminder...
-                Console.WriteLine("");
-            }
-
             foreach (var span in e.NewOrReformattedSpans)
             {
                 if (TagsChanged != null)
@@ -97,7 +97,6 @@ namespace TodoArdornment
                     TagsChanged(this, new SnapshotSpanEventArgs(span));
                 }
             }
-
         }
 
         public IEnumerable<ITagSpan<TodoGlyphTag>> GetTags(Microsoft.VisualStudio.Text.NormalizedSnapshotSpanCollection spans)
@@ -142,7 +141,9 @@ namespace TodoArdornment
                     var actions = new ReadOnlyCollection<SmartTagActionSet>(new SmartTagActionSet[]{}.ToList());
                     if (line != null && 
                         //_textView.Caret.ContainingTextViewLine.ContainsBufferPosition(span.Start)
-                        true
+                        //true
+                        _textView.TextSnapshot.GetLineNumberFromPosition(_textView.Caret.Position.BufferPosition) ==
+                        span.Start.GetContainingLine().LineNumber
                         )
                     {
                          actions = GetSmartTagActions(spanNew, dueDate, friendly);
@@ -167,17 +168,27 @@ namespace TodoArdornment
             var whenActionList = new List<ISmartTagAction>();
             if( dueDate.HasValue )
             {
-                string actionTitle = "Due on " + dueDate.Value.ToShortDateString();
-                if (friendly != null )
+                var todoNote = DueByAction.ExtractTodoMessage(span.Start.GetContainingLine().GetText());
+
+                // Look up if Todo Note exists and is incomplete
+                var reminder = AttachablesPackage.Manager.FindReminderByProperties(todoNote, filePath, false);
+                if (reminder == null )
                 {
-                    actionTitle = string.Format("Due on {0} ({1})", friendly, dueDate.Value.ToShortDateString());
+                    string actionTitle = "Due on " + dueDate.Value.ToShortDateString();
+                    if (friendly != null)
+                    {
+                        actionTitle = string.Format("Due on {0} ({1})", friendly, dueDate.Value.ToShortDateString());
+                    }
+                    whenActionList.Add(new DueByAction(trackingSpan, this, actionTitle, dueDate.Value, friendly, filePath));
                 }
-                whenActionList.Add(new WhenAction(trackingSpan, this, actionTitle, TimeSpan.FromDays(1), filePath));
+                else
+                {
+                    // Provide Complete Option
+                    whenActionList.Add(new CompleteDueByAction(trackingSpan, this, "Mark Complete", filePath, reminder));
+                }
             }
             whenActionList.Add(new WhenAction(trackingSpan, this, "Show next day", TimeSpan.FromDays(1), filePath));
             whenActionList.Add(new WhenAction(trackingSpan, this, "Show next week", TimeSpan.FromDays(7), filePath));
-
-
 
             // list of action sets...
             var actionSetList = new List<SmartTagActionSet>();

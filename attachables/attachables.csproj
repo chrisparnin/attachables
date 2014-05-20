@@ -149,7 +149,10 @@
     <Compile Include="Migrations\AddTodoSource.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\AddCompletedOnDate.cs" />
+    <Compile Include="Migrations\AddNotificationType.cs" />
     <Compile Include="Reminders\Adornments\Actions\AttachAction.cs" />
+    <Compile Include="Reminders\Adornments\Actions\CompleteDueByAction.cs" />
+    <Compile Include="Reminders\Adornments\Actions\DueByAction.cs" />
     <Compile Include="Reminders\Adornments\Actions\WhenAction.cs" />
     <Compile Include="Reminders\Adornments\DateMatcher.cs" />
     <Compile Include="Reminders\Adornments\TodoArdornment.cs" />
@@ -160,16 +163,17 @@
     <Compile Include="Manager.cs" />
     <Compile Include="Reminders\Models\AbstractionCondition.cs" />
     <Compile Include="Reminders\Models\Conditions\ConditionType.cs" />
+    <Compile Include="Reminders\Models\Conditions\DueBy.cs" />
     <Compile Include="Reminders\Models\Conditions\Proximity.cs" />
     <Compile Include="Reminders\Models\Conditions\Session.cs" />
     <Compile Include="Reminders\Models\Conditions\Time.cs" />
     <Compile Include="Reminders\Models\NotificationKind.cs" />
     <Compile Include="Reminders\Models\Reminder.cs" />
     <Compile Include="Reminders\Models\RemindersExportPackage.cs" />
-    <Compile Include="Reminders\ToolWindows\MyControl.xaml.cs">
+    <Compile Include="Reminders\UI\ToolWindows\MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Reminders\ToolWindows\MyToolWindow.cs" />
+    <Compile Include="Reminders\UI\ToolWindows\MyToolWindow.cs" />
     <Compile Include="Storage\Initializier.cs" />
     <Compile Include="Storage\ReminderContract.cs" />
     <Compile Include="Storage\RemindersInitializer.cs" />
@@ -223,6 +227,7 @@
   <ItemGroup>
     <VSCTCompile Include="attachables.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,10 +235,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\attach.png" />
+    <Resource Include="Resources\checkbox.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Reminders\ToolWindows\MyControl.xaml">
+    <Page Include="Reminders\UI\ToolWindows\MyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

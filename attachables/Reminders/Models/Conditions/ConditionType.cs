@@ -15,6 +15,8 @@ namespace ninlabs.attachables.Models.Conditions
         [EnumMember]
         Tasking = 0x0010,
         [EnumMember]
-        Proximity = 0x0100
+        Proximity = 0x0100,
+        [EnumMember]
+        Time = 0x1000
     }
 }

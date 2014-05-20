@@ -48,10 +48,8 @@ namespace ninlabs.attachables.UI
             this.DoneCommand = new RelayCommand(
                 () =>
                 {
-                    this.Reminder.IsCompleted = true;
-                    this.Reminder.CompletedOn = DateTime.Now;
-                    AttachablesPackage.Manager.SaveReminder(this.Reminder);
                     //note.RemoveAdornment(this.Reminder.Id);
+                    AttachablesPackage.Manager.CompleteReminder(this.Reminder);
                 },
                 () => { return true; }
                 );

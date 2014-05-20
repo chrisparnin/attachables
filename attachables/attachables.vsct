@@ -81,10 +81,20 @@
         </Strings>
       </Button>
 
+      <Button guid="guidAttachablesCmdSet" id="cmdidTodoMarkComplete" priority="0x0100" type="Button">
+        <Parent guid="guidAttachablesCmdSet" id="GroupIdErrorList" />
+        <Icon guid="checkboxGuid" id="checkbox" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>cmdidTodoMarkComplete</CommandName>
+          <ButtonText>Mark Complete</ButtonText>
+        </Strings>
+      </Button>
+
 
       <Button guid="guidAttachablesCmdSet" id="cmdidTodoByCancel" priority="0x0100" type="Button">
         <Parent guid="guidAttachablesCmdSet" id="GroupIdErrorList" />
-        <Icon guid="guidImages" id="bmpPic1" />
+        <Icon guid="guidImages" id="bmpPicX" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidTodoByCancel</CommandName>
@@ -94,7 +104,7 @@
 
       <Button guid="guidAttachablesCmdSet" id="cmdidTodoBySnooze" priority="0x0100" type="Button">
         <Parent guid="guidAttachablesCmdSet" id="GroupIdErrorList" />
-        <Icon guid="guidImages" id="bmpPic1" />
+        <Icon guid="timeGuid" id="time" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidTodoBySnooze</CommandName>
@@ -113,7 +123,11 @@
             inside a button definition. An important aspect of this declaration is that the element id 
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
       <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
-      
+
+      <Bitmap guid="attachGuid" href="Resources\attach.png" usedList="attach"/>
+      <Bitmap guid="checkboxGuid" href="Resources\checkbox.png" usedList="checkbox"/>
+      <Bitmap guid="timeGuid" href="Resources\time.png" usedList="time"/>
+
     </Bitmaps>
  
   </Commands>
@@ -136,10 +150,8 @@
       <IDSymbol name="GroupIdErrorList" value="0x1021" />
       <IDSymbol name="cmdidTodoByCancel" value="0x200" />
       <IDSymbol name="cmdidTodoBySnooze" value="0x201" />
-
+      <IDSymbol name="cmdidTodoMarkComplete" value="0x202" />
     </GuidSymbol>
-    
-    
     
     <GuidSymbol name="guidImages" value="{1e1fc5f2-a650-46e1-98e4-b382d88a3254}" >
       <IDSymbol name="bmpPic1" value="1" />
@@ -149,6 +161,17 @@
       <IDSymbol name="bmpPicArrows" value="5" />
       <IDSymbol name="bmpPicStrikethrough" value="6" />
     </GuidSymbol>
+
+    <GuidSymbol name="attachGuid" value="{5125503C-652F-45BB-82B8-4EEA33E8C153}" >
+      <IDSymbol name="attach" value="1" />
+    </GuidSymbol>
+    <GuidSymbol name="timeGuid" value="{EEBF261F-ED80-4DB9-A594-6F30389761C0}" >
+      <IDSymbol name="time" value="1" />
+    </GuidSymbol>
+    <GuidSymbol name="checkboxGuid" value="{671929B1-63EE-4562-AC63-AB36273F58A5}" >
+      <IDSymbol name="checkbox" value="1" />
+    </GuidSymbol>
+
   </Symbols>
 
 </CommandTable>

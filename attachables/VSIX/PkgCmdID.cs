@@ -11,6 +11,7 @@ namespace ninlabs.attachables
 
         public const uint cmdidTodoByCancel = 0x200;
         public const uint cmdidTodoBySnooze = 0x201;
+        public const uint cmdidTodoByMarkDone = 0x202;
 
     };
 }

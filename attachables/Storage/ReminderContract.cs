@@ -13,7 +13,8 @@ namespace ninlabs.attachables.Storage
 
         public String ConditionAsString { get; set; }
 
-        public NotificationType NotificationType { get; set; }
+        // NotificationType (since down grading to .NET 4, EF 5 doesn't support enums in this context)
+        public int NotificationType { get; set; }
 
         public String ReminderMessage { get; set; }
 

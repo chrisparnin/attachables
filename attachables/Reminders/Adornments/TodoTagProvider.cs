@@ -15,7 +15,12 @@ namespace TodoArdornment
     [TagType(typeof(TodoGlyphTag))]
     internal class TodoTagProvider : IViewTaggerProvider
     {
-        Dictionary<Microsoft.VisualStudio.Text.Editor.ITextView, TodoTagger> taggers = new Dictionary<Microsoft.VisualStudio.Text.Editor.ITextView, TodoTagger>();
+        static Dictionary<Microsoft.VisualStudio.Text.Editor.ITextView, TodoTagger> taggers = new Dictionary<Microsoft.VisualStudio.Text.Editor.ITextView, TodoTagger>();
+
+        public static TodoTagger GetTagger(Microsoft.VisualStudio.Text.Editor.ITextView view)
+        {
+            return taggers[view];
+        }
 
         public ITagger<T> CreateTagger<T>(Microsoft.VisualStudio.Text.Editor.ITextView textView, Microsoft.VisualStudio.Text.ITextBuffer buffer) where T : ITag
         {

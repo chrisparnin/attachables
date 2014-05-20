@@ -13,7 +13,7 @@ namespace ninlabs.attachables.Models.Conditions
     {
         public Time()
         {
-            Type = ConditionType.Session;
+            Type = ConditionType.Time;
         }
         [DataMember]
         public DateTime TriggerBy { get; set; }

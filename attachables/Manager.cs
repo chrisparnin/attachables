@@ -10,6 +10,7 @@ using ninlabs.attachables.Storage;
 using ninlabs.attachables.Util;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using ninlabs.attachables.Reminders.Models.Conditions;
 
 namespace ninlabs.attachables
 {
@@ -38,7 +39,7 @@ namespace ninlabs.attachables
                 return list.Select(r => new Reminder()
                 {
                     Id = r.Id,
-                    NotificationType = r.NotificationType,
+                    NotificationType = (NotificationType) r.NotificationType,
                     ReminderMessage = r.ReminderMessage,
                     Condition = r.ConditionAsString.Deserialize<AbstractCondition>(),
                     IsCompleted = r.IsCompleted,
@@ -51,51 +52,20 @@ namespace ninlabs.attachables
             }
         }
 
-        public void TodoBy(string message, string date, string file, int line)
+        public void CompleteReminder(Reminder reminder)
         {
-            var ivsSolution = (IVsSolution)Package.GetGlobalService(typeof(IVsSolution));
-            //Get first project IVsHierarchy item (needed to link the task with a project)
-            IVsHierarchy hierarchyItem;
-            ivsSolution.GetProjectOfUniqueName(file, out hierarchyItem);
- 
-            var newError = new ErrorTask()
-            {
-                ErrorCategory = TaskErrorCategory.Error,
-                Category = TaskCategory.BuildCompile,
-                Text = message + " not completed by " + date,
-                Document = file,
-                Line = line,
-                Column = 6,
-                HierarchyItem = hierarchyItem,
-                CanDelete = true
-            };
-
-            newError.Navigate += (sender, e) =>
-            {
-                //there are two Bugs in the errorListProvider.Navigate method:
-                //    Line number needs adjusting
-                //    Column is not shown
-                newError.Line++;
-                ErrorProvider.Navigate(newError, new Guid(EnvDTE.Constants.vsViewKindCode));
-                newError.Line--;
-            };
-
-            ErrorProvider.Tasks.Clear();	// clear previously created
-            ErrorProvider.Tasks.Add(newError);	// add item
-            ErrorProvider.Show(); 		// make sure it is visible
-
-                
+            reminder.IsCompleted = true;
+            reminder.CompletedOn = DateTime.Now;
+            AttachablesPackage.Manager.SaveReminder(reminder);
         }
+
 
         // TODO weird behavior sometimes with done being clicked, but subsquent actions not working...better refresh?
         
         // TODO when to check todo by ?  Startup...hook into before build?
         
-        // TODO Have "Due on" enter todo into database.
-
-        // TODO If can find todo by in db, then instead of "due on" action, it should have a mark done or edit/update date action.
-
         // TODO Edit TODO reminder text.
+
 
 
         // If supporting Todo by, how to turn off?
@@ -122,8 +92,31 @@ namespace ninlabs.attachables
                  CompletedOn = null
             });
 
-            TodoBy(message, "Today", sourcePath, lineStart);
+            //TodoBy(message, "Today", sourcePath, lineStart);
         }
+
+        // Touch Points
+        // TODO Idea: Apply To (fix it to other candidates).
+
+        public void DueByReminder(string message, DateTime dueBy, string friendlyDate, string sourcePath, int lineStart)
+        {
+            SaveReminder(new Reminder()
+            {
+                Condition = new DueBy()
+                {
+                    DueByDate = dueBy,
+                    FriendlyDueDate = friendlyDate
+                },
+                CreatedOn = DateTime.Now,
+                NotificationType = NotificationType.BuildError,
+                ReminderMessage = message,
+                
+                SourcePath = sourcePath,
+                LineStart = lineStart,
+                CompletedOn = null
+            });
+        }
+
 
         public void WhenDateShowReminder(string message, DateTime triggerBy, string sourcePath, int lineStart)
         {
@@ -153,7 +146,7 @@ namespace ninlabs.attachables
                     {
                         ConditionAsString = reminder.Condition.Serialize(),
                         CreatedOn = reminder.CreatedOn,
-                        NotificationType = reminder.NotificationType,
+                        NotificationType = (int)reminder.NotificationType,
                         ReminderMessage = reminder.ReminderMessage,
                         IsCompleted = reminder.IsCompleted,
                         SnoozeUntil = reminder.SnoozeUntil,
@@ -168,7 +161,7 @@ namespace ninlabs.attachables
                 else
                 {
                     dbReminder.ConditionAsString = reminder.Condition.Serialize();
-                    dbReminder.NotificationType = reminder.NotificationType;
+                    dbReminder.NotificationType = (int)reminder.NotificationType;
                     dbReminder.ReminderMessage = reminder.ReminderMessage;
                     dbReminder.IsCompleted = reminder.IsCompleted;
                     dbReminder.SnoozeUntil = reminder.SnoozeUntil;
@@ -239,5 +232,74 @@ namespace ninlabs.attachables
                 }
             }
         }
+
+        internal Reminder FindReminderByProperties(string todoNote, string filePath, bool completed)
+        {
+            return GetReminders()
+                .Where(r => r.ReminderMessage == todoNote && r.SourcePath == filePath
+                       && r.IsCompleted == completed)
+                .FirstOrDefault();
+        }
+
+        internal void CheckTodoBy()
+        {
+            var remindersDue = GetReminders()
+                .Where( r => r.NotificationType == NotificationType.BuildError )
+                //.Where( r => r.Condition.Type == ConditionType.Time )
+                .Where( r => r.IsCompleted == false )
+                .Where( r => r.Condition.IsApplicable(r, null ));
+
+            var ivsSolution = (IVsSolution)Package.GetGlobalService(typeof(IVsSolution));
+            ErrorProvider.Tasks.Clear();	// clear previously created
+
+            foreach (var reminder in remindersDue)
+            {
+                var condition = reminder.Condition as DueBy;
+                TodoBy(ivsSolution, reminder.ReminderMessage, 
+                    condition.DueByDate.ToShortDateString(),
+                    condition.FriendlyDueDate,
+                    reminder.SourcePath, reminder.LineStart);
+            }
+
+            ErrorProvider.Show(); 		// make sure it is visible
+        }
+
+        public void TodoBy(IVsSolution ivsSolution, string message, string date, string friendly, string file, int line)
+        {
+            //Get first project IVsHierarchy item (needed to link the task with a project)
+            IVsHierarchy hierarchyItem;
+            ivsSolution.GetProjectOfUniqueName(file, out hierarchyItem);
+
+            var errorMessage = message + " not completed by " + date;
+            if (friendly != null)
+            {
+                errorMessage = string.Format("{0} not completed by {1} ({2})",
+                    message, friendly, date);
+            }
+            var newError = new ErrorTask()
+            {
+                ErrorCategory = TaskErrorCategory.Error,
+                Category = TaskCategory.BuildCompile,
+                Text = errorMessage,
+                Document = file,
+                Line = line,
+                Column = 6,
+                HierarchyItem = hierarchyItem,
+                CanDelete = true
+            };
+
+            newError.Navigate += (sender, e) =>
+            {
+                //there are two Bugs in the errorListProvider.Navigate method:
+                //    Line number needs adjusting
+                //    Column is not shown
+                newError.Line++;
+                ErrorProvider.Navigate(newError, new Guid(EnvDTE.Constants.vsViewKindCode));
+                newError.Line--;
+            };
+
+            ErrorProvider.Tasks.Add(newError);	// add item
+        }
+
     }
 }

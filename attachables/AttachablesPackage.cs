@@ -107,10 +107,24 @@ namespace ninlabs.attachables
                 mcs.AddCommand( menuToolWin );
 
                 // Create the menu option in the error list window
-                CommandID errorListCommand = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidTodoByCancel);
-                OleMenuCommand errorMenuItem = new OleMenuCommand(this.CancelErrorItem, errorListCommand);
-                errorMenuItem.BeforeQueryStatus += new System.EventHandler(this.errorMenuItem_BeforeQueryStatus);
-                mcs.AddCommand(errorMenuItem);
+                
+                // cancel
+                CommandID cancelCommand = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidTodoByCancel);
+                OleMenuCommand cancelMenuItem = new OleMenuCommand(this.CancelErrorItem, cancelCommand);
+                cancelMenuItem.BeforeQueryStatus += new System.EventHandler(this.errorMenuItem_BeforeQueryStatus);
+                mcs.AddCommand(cancelMenuItem);
+
+                // mark done
+                CommandID completeListCommand = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidTodoByMarkDone);
+                OleMenuCommand completeMenuItem = new OleMenuCommand(this.MarkErrorItemDone, completeListCommand);
+                completeMenuItem.BeforeQueryStatus += new System.EventHandler(this.errorMenuItem_BeforeQueryStatus);
+                mcs.AddCommand(completeMenuItem);
+
+                // snooze
+                CommandID snoozeListCommand = new CommandID(GuidList.guidAttachablesCmdSet, (int)PkgCmdIDList.cmdidTodoBySnooze);
+                OleMenuCommand snoozeMenuItem = new OleMenuCommand(this.SnoozeErrorItem, snoozeListCommand);
+                snoozeMenuItem.BeforeQueryStatus += new System.EventHandler(this.errorMenuItem_BeforeQueryStatus);
+                mcs.AddCommand(snoozeMenuItem);
 
             }
 
@@ -120,7 +134,6 @@ namespace ninlabs.attachables
 
         private void CancelErrorItem(object sender, EventArgs e)
         {
-            
             EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
             ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
             object[] objer = (object[])myErrorList.SelectedItems;
@@ -132,6 +145,66 @@ namespace ninlabs.attachables
                     var errorTask = FindErrorTask(errorItem, AttachablesPackage.Manager.ErrorProvider);
                     if (errorTask != null)
                     {
+                        AttachablesPackage.Manager.ErrorProvider.Tasks.Remove(errorTask);
+
+                        var searchText = errorTask.Text.Substring(0, errorTask.Text.IndexOf(" not completed by "));
+                        var reminder = AttachablesPackage.Manager.FindReminderByProperties(searchText, errorTask.Document, false);
+                        if (reminder != null)
+                        {
+                            reminder.NotificationType = Models.NotificationType.None;
+                            AttachablesPackage.Manager.SaveReminder(reminder);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MarkErrorItemDone(object sender, EventArgs e)
+        {
+            EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
+            object[] objer = (object[])myErrorList.SelectedItems;
+            foreach (object item in objer)
+            {
+                var errorItem = item as ErrorItem;
+                if (errorItem != null)
+                {
+                    var errorTask = FindErrorTask(errorItem, AttachablesPackage.Manager.ErrorProvider);
+                    if (errorTask != null)
+                    {
+                        var searchText = errorTask.Text.Substring(0, errorTask.Text.IndexOf(" not completed by "));
+                        var reminder = AttachablesPackage.Manager.FindReminderByProperties(searchText, errorTask.Document, false);
+                        if (reminder != null)
+                        {
+                            AttachablesPackage.Manager.CompleteReminder(reminder);
+                        }
+
+                        AttachablesPackage.Manager.ErrorProvider.Tasks.Remove(errorTask);
+                    }
+                }
+            }
+        }
+
+        private void SnoozeErrorItem(object sender, EventArgs e)
+        {
+            EnvDTE.Window window = this.dte.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            ErrorList myErrorList = (EnvDTE80.ErrorList)window.Object;
+            object[] objer = (object[])myErrorList.SelectedItems;
+            foreach (object item in objer)
+            {
+                var errorItem = item as ErrorItem;
+                if (errorItem != null)
+                {
+                    var errorTask = FindErrorTask(errorItem, AttachablesPackage.Manager.ErrorProvider);
+                    if (errorTask != null)
+                    {
+                        var searchText = errorTask.Text.Substring(0, errorTask.Text.IndexOf(" not completed by ") );
+                        var reminder = AttachablesPackage.Manager.FindReminderByProperties(searchText, errorTask.Document, false);
+                        if (reminder != null)
+                        {
+                            AttachablesPackage.Manager.SnoozeReminder(reminder);
+                        }
+
                         AttachablesPackage.Manager.ErrorProvider.Tasks.Remove(errorTask);
                     }
                 }
@@ -150,10 +223,10 @@ namespace ninlabs.attachables
             return null;
         }
 
-
         #endregion
 
         EnvDTE.DTE dte;
+        EnvDTE.BuildEvents buildEvents;
         private void InitializeWithSolutionAndDTEReady()
         {
             string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
@@ -168,8 +241,38 @@ namespace ninlabs.attachables
             {
                 System.IO.Directory.CreateDirectory(path);
             }
+            
+            
             RemindersContext.ConfigureDatabase(path);
             Manager = new ReminderManager(this);
+
+            // Check due reminders once during startup.
+            Manager.CheckTodoBy();
+
+            // Need to always have reference to avoid COM releasing.
+            buildEvents = dte.Events.BuildEvents;
+
+            buildEvents.OnBuildBegin += (scope, action) =>
+            {
+                // Check due reminders when building.
+                Manager.CheckTodoBy();
+            };
+
+            buildEvents.OnBuildDone += (scope, action) =>
+            {
+            };
+
+
+            buildEvents.OnBuildProjConfigBegin += (project, config, platform, solutionConfig) =>
+            {
+            };
+
+
+            buildEvents.OnBuildProjConfigDone += (project, config, platform, solutionConfig, success) =>
+            {
+            };
+
+
         }
 
         private void errorMenuItem_BeforeQueryStatus(object sender, System.EventArgs e)
