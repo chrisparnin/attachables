@@ -28,8 +28,13 @@ TODO notes can also have **due dates**.  Simply use the following format:
 - **Attach here:** A reminder is attached to the corner of the editor viewport and only displayed when you are at this file.
 - **Attach everywhere:** A reminder is attached to the corner of the editor viewport in all code windows.  You really want to remember it!
 - **Due on:** A reminder that is note taken care of by the specified date will be displayed as a *compile error*!
+- **Mark Complete:** A reminder that has a due by date can be marked complete from the menu.
 - **Show next day:** A reminder will be displayed the next day in all code windows.
 - **Show next week:** A reminder will be displayed the next week in all code windows.  Probably not a big deal.
+
+Example context menu displayed that allows you to mark reminders with a due date complete.
+
+![MarkComplete](https://raw.github.com/chrisparnin/attachables/master/doc/MarkComplete.png)
 
 #### Attachable actions: 
 
@@ -41,7 +46,7 @@ Additional actions are available if you hover over a reminder.
 
 ![menu](https://raw.github.com/chrisparnin/attachables/master/doc/attachablesmenu.png)
 
-If you have an expired todo note, you can use the context menu to *cancel* or *snooze* the reminder.
+If you have an expired todo note, you can use the context menu to *cancel*, *mark done*, or *snooze* the reminder.
 
 ![Cancel](https://raw.github.com/chrisparnin/attachables/master/doc/Cancel.png)
 
