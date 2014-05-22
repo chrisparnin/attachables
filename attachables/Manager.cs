@@ -11,6 +11,8 @@ using ninlabs.attachables.Util;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ninlabs.attachables.Reminders.Models.Conditions;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace ninlabs.attachables
 {
@@ -51,6 +53,9 @@ namespace ninlabs.attachables
                 }).OrderBy(r => r.IsCompleted).ToList();
             }
         }
+        // TODO By Friday - Let reminders be editable.
+
+        // TODO By Today Example expired reminder.
 
         public void CompleteReminder(Reminder reminder)
         {
@@ -75,23 +80,25 @@ namespace ninlabs.attachables
 
         // Option 3 works at the moment.
 
-        public void AttachReminder(string message, string path, string sourcePath, int lineStart)
+        public Reminder AttachReminder(string message, string path, string sourcePath, int lineStart)
         {
-            SaveReminder(new Reminder()
+            var reminder = new Reminder()
             {
-                 Condition = new Proximity()
-                 {
-                     Path = path
-                 },
-                 CreatedOn = DateTime.Now,
-                 NotificationType = NotificationType.Viewport,
-                 ReminderMessage = message,
-                 SnoozeUntil = null,
-                 SourcePath = sourcePath,
-                 LineStart = lineStart,
-                 CompletedOn = null
-            });
+                Condition = new Proximity()
+                {
+                    Path = path
+                },
+                CreatedOn = DateTime.Now,
+                NotificationType = NotificationType.Viewport,
+                ReminderMessage = message,
+                SnoozeUntil = null,
+                SourcePath = sourcePath,
+                LineStart = lineStart,
+                CompletedOn = null
+            };
+            SaveReminder(reminder);
 
+            return reminder;
             //TodoBy(message, "Today", sourcePath, lineStart);
         }
 
@@ -224,7 +231,15 @@ namespace ninlabs.attachables
 
                 if (reminder.SourcePath != null)
                 {
-                    CurrentPositionHelper.NavigateTo(reminder.SourcePath, reminder.LineStart);
+                    var point = UpdatedPoint(reminder);
+                    if (point == null)
+                    {
+                        CurrentPositionHelper.NavigateTo(reminder.SourcePath, reminder.LineStart);
+                    }
+                    else 
+                    {
+                        CurrentPositionHelper.NavigateTo(reminder.SourcePath, point.Value.GetContainingLine().LineNumber);                    
+                    }
                 }
                 else if (parts.Length == 2 && parts[0] == "file")
                 {
@@ -262,6 +277,24 @@ namespace ninlabs.attachables
             }
 
             ErrorProvider.Show(); 		// make sure it is visible
+        }
+
+        Dictionary<long, Tuple<ITrackingPoint,ITextView>> trackingMap = new Dictionary<long, Tuple<ITrackingPoint,ITextView>>();
+        public void TrackReminder(ITrackingPoint point, ITextView view, Reminder reminder)
+        {
+            trackingMap[reminder.Id] = new Tuple<ITrackingPoint,ITextView>(point,view);
+        }
+
+        public SnapshotPoint? UpdatedPoint(Reminder reminder)
+        {
+            if (trackingMap.ContainsKey(reminder.Id))
+            {
+                var trackingPoint = trackingMap[reminder.Id].Item1;
+                var updatedPoint = trackingPoint.GetPoint(trackingMap[reminder.Id].Item2.TextSnapshot);
+
+                return updatedPoint;
+            }
+            return null;
         }
 
         public void TodoBy(IVsSolution ivsSolution, string message, string date, string friendly, string file, int line)

@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using TodoArdornment;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace ninlabs.attachables.Reminders.Adornments.Actions
 {
@@ -22,6 +23,7 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
         private bool m_enabled = true;
         private string m_path;
         TodoTagger m_tagger;
+        ITextView m_view;
 
         private static BitmapImage m_attachIcon;
 
@@ -41,7 +43,7 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
             }
         }
 
-        public AttachAction(ITrackingSpan span, TodoTagger tagger, string display, string path, string filePath)
+        public AttachAction(ITrackingSpan span, ITextView view, TodoTagger tagger, string display, string path, string filePath)
         {
             m_span = span;
             m_snapshot = span.TextBuffer.CurrentSnapshot;
@@ -49,6 +51,7 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
             m_display = display;
             m_path = path;
             m_tagger = tagger;
+            m_view = view;
             this.FileLocation = filePath;
         }
 
@@ -65,7 +68,12 @@ namespace ninlabs.attachables.Reminders.Adornments.Actions
                     var match = TodoTagger.todoLineRegex.Match(text);
                     text = text.Substring(match.Index + match.Length);
 
-                    AttachablesPackage.Manager.AttachReminder(text.Trim(), m_path, FileLocation, line.LineNumber);
+                    var reminder = AttachablesPackage.Manager.AttachReminder(text.Trim(), m_path, FileLocation, line.LineNumber);
+
+                    ITrackingPoint triggerPoint = m_snapshot.CreateTrackingPoint(
+                        m_span.GetStartPoint(m_snapshot), PointTrackingMode.Positive);
+
+                    AttachablesPackage.Manager.TrackReminder(triggerPoint, m_view, reminder);
 
                     m_enabled = false;
                     this.m_tagger.RaiseTagsChanged(m_span.GetSpan(m_snapshot));

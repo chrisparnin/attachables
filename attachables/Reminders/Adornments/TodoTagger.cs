@@ -64,6 +64,7 @@ namespace TodoArdornment
         }
 
         // TODO Investigate ITrackingPoint for updating TODO state. (edit).
+        // TODO by Friday See if can use tracking to update line number of reminder.
 
         /*
          *   SnapshotPoint? point = textView.BufferGraph.MapDownToFirstMatch(
@@ -79,6 +80,27 @@ namespace TodoArdornment
           session = provider.QuickInfoBroker.TriggerQuickInfo(textView, triggerPoint, true);
         }
       }*/
+
+        void createTrackingPointTest(SnapshotPoint point, ITextView textView)
+        { 
+            if ( point != null ) 
+            {
+                ITrackingPoint triggerPoint = point.Snapshot.CreateTrackingPoint(
+                    point.Position, PointTrackingMode.Positive);
+
+                //var updatedPoint = triggerPoint.GetPoint( textView.TextSnapshot );
+            }
+
+            //SnapshotPoint? point = textView.BufferGraph.MapDownToFirstMatch(
+            //    new SnapshotPoint(textView.TextSnapshot, e.Position),
+            //    PointTrackingMode.Positive,
+            //    snapshot => textView.BufferGraph.GetTextBuffers( null ).Contains(snapshot.TextBuffer),
+            //    PositionAffinity.Predecessor
+            //);
+            //if ( provider.QuickInfoBroker.IsQuickInfoActive(textView) ) {
+            //  session = provider.QuickInfoBroker.TriggerQuickInfo(textView, triggerPoint, true);
+
+        }
 
         internal void RaiseTagsChanged(SnapshotSpan span)
         {
@@ -162,8 +184,8 @@ namespace TodoArdornment
             var filePath = CurrentFilePathRaw();
 
             var attachActionList = new List<ISmartTagAction>();
-            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach here", CurrentFilePath(), filePath));
-            attachActionList.Add(new AttachAction(trackingSpan, this, "Attach everywhere", "", filePath));
+            attachActionList.Add(new AttachAction(trackingSpan, _textView, this, "Attach here", CurrentFilePath(), filePath));
+            attachActionList.Add(new AttachAction(trackingSpan, _textView, this, "Attach everywhere", "", filePath));
 
             var whenActionList = new List<ISmartTagAction>();
             if( dueDate.HasValue )
