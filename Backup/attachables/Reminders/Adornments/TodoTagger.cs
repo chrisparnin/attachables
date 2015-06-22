@@ -21,7 +21,7 @@ namespace TodoArdornment
     public class TodoTagger : ITagger<TodoGlyphTag>
     {
         public event EventHandler<Microsoft.VisualStudio.Text.SnapshotSpanEventArgs> TagsChanged;
-        public static Regex todoLineRegex = new Regex(@"\/\/!?\s*@?(TODO|FIXME|FIX|XXX)\s*(BY)?\b", RegexOptions.IgnoreCase);
+        public static Regex todoLineRegex = new Regex(@"\/\/\s*TODO\s*(BY)?\b", RegexOptions.IgnoreCase);
 
         ITextView _textView;
 
