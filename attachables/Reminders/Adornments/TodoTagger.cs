@@ -21,7 +21,7 @@ namespace TodoArdornment
     public class TodoTagger : ITagger<TodoGlyphTag>
     {
         public event EventHandler<Microsoft.VisualStudio.Text.SnapshotSpanEventArgs> TagsChanged;
-        public static Regex todoLineRegex = new Regex(@"\/\/!?\s*@?(TODO|FIXME|FIX|XXX)\s*(BY)?\b", RegexOptions.IgnoreCase);
+        public static Regex todoLineRegex = new Regex(@"\/\/!?\s*@?(TODO|FIXME|FIX|XXX)\s*(BY)?\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         ITextView _textView;
 
@@ -132,7 +132,7 @@ namespace TodoArdornment
                     var point = span.Start.Add(match.Index);
                     var spanNew = new SnapshotSpan(span.Snapshot, new Span(point.Position, match.Length));
                     var hasDueBy = false;
-                    if (match.Groups.Count == 2 && match.Groups[1].Value.ToLower() == "by" )
+                    if (match.Groups[match.Groups.Count-1].Value.ToLower() == "by" )
                     {
                         hasDueBy = true;
                     }
