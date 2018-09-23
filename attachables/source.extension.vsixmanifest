@@ -1,45 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-  <Identifier Id="2f0b2fc6-4251-4a42-a756-e3e6051bff7b">
-    <Name>attachables</Name>
-    <Author>ninlabs</Author>
-    <Version>1.0.5.7</Version>
+
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
+                 xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="2f0b2fc6-4251-4a42-a756-e3e6051bff7b" Version="2.0.0.0" Language="en-US"
+              Publisher="ninlabs" />
+    <DisplayName>attachables</DisplayName>
     <Description xml:space="preserve">Attach reminders where and when you need them in your code editor.</Description>
-    <Locale>1033</Locale>
-    <MoreInfoUrl>https://github.com/chrisparnin/attachables</MoreInfoUrl>
+    <MoreInfo>https://github.com/chrisparnin/attachables</MoreInfo>
     <License>License.rtf</License>
     <GettingStartedGuide>https://github.com/chrisparnin/attachables</GettingStartedGuide>
-    <SupportedProducts>
-      <VisualStudio Version="10.0">
-        <Edition>Ultimate</Edition>
-        <Edition>Premium</Edition>
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="11.0">
-        <Edition>Ultimate</Edition>
-        <Edition>Premium</Edition>
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="12.0">
-        <Edition>Ultimate</Edition>
-        <Edition>Premium</Edition>
-        <Edition>Pro</Edition>
-      </VisualStudio>
-      <VisualStudio Version="13.0">
-        <Edition>Ultimate</Edition>
-        <Edition>Premium</Edition>
-        <Edition>Pro</Edition>
-      </VisualStudio>      
-    </SupportedProducts>
-    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="5.0" />
-  </Identifier>
-  <References>
-   <Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">
-     <Name>Visual Studio MPF</Name>
-   </Reference>
-  </References>
-  <Content>
-    <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>  
-    <MefComponent>|%CurrentProject%|</MefComponent>
-  </Content>
-</Vsix>
+    <Tags>todo, reminders, productivity</Tags>
+  </Metadata>
+  <Installation InstalledByMsi="false">
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0,16.0)" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)"
+                d:InstallSource="Download" Location="https://www.microsoft.com/en-us/download/details.aspx?id=49982" />
+    <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed"
+                Version="[12.0,15.0]" />
+  </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+  </Assets>
+</PackageManifest>

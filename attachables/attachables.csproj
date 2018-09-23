@@ -258,10 +258,13 @@
     <Content Include="License.rtf">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
     <Resource Include="Resources\time.png" />
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="source.extension.vsixmanifest">
+    <None Include="v1-extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
